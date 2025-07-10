@@ -1,16 +1,84 @@
+
+"use client";
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Utensils, Calendar } from "lucide-react";
+import { Calendar, Utensils } from "lucide-react";
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { Skeleton } from "../ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 
-const bookings = [
-  { id: "1", userName: "John Doe", mealName: "Lean Chicken & Quinoa", date: "2024-05-20" },
-  { id: "2", userName: "Jane Smith", mealName: "Salmon with Asparagus", date: "2024-05-21" },
-  { id: "3", userName: "John Doe", mealName: "Tofu Stir-fry", date: "2024-05-22" },
-  { id: "4", userName: "Emily White", mealName: "Lean Chicken & Quinoa", date: "2024-05-23" },
-  { id: "5", userName: "Michael Brown", mealName: "Salmon with Asparagus", date: "2024-05-24" },
-];
+interface Booking {
+  id: string;
+  userName: string;
+  mealName: string;
+  date: string;
+}
 
 export function BookingTable() {
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      setLoading(true);
+      try {
+        const querySnapshot = await getDocs(collection(db, "bookings"));
+        const bookingsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Booking));
+        setBookings(bookingsData);
+      } catch (error) {
+        console.error("Error fetching bookings: ", error);
+        toast({
+          variant: "destructive",
+          title: "Error fetching bookings",
+          description: "Could not retrieve booking data from the database.",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, [toast]);
+
+  if (loading) {
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => (
+                <Card key={i}>
+                    <CardHeader>
+                        <Skeleton className="h-6 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                        <Skeleton className="h-5 w-full" />
+                        <Skeleton className="h-5 w-full" />
+                    </CardContent>
+                    <CardFooter>
+                        <Skeleton className="h-10 w-full" />
+                    </CardFooter>
+                </Card>
+            ))}
+        </div>
+    )
+  }
+
+  if (bookings.length === 0) {
+    return (
+      <Card className="col-span-full text-center">
+        <CardHeader>
+          <CardTitle>No Bookings Found</CardTitle>
+          <CardDescription>
+            There are currently no meal bookings in the system.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {bookings.map((booking) => (
