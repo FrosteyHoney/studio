@@ -1,15 +1,21 @@
 
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
+
+interface Meal {
+    id: string;
+    name: string;
+}
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-
-const meals = [
-  { id: "1", name: "Lean Chicken & Quinoa" },
-  { id: "2", name: "Salmon with Asparagus" },
-  { id: "3", name: "Tofu Stir-fry" },
-];
 
 const mealPlan = {
   "John Doe": { "Monday": "Lean Chicken & Quinoa", "Wednesday": "Salmon with Asparagus", "Friday": "Tofu Stir-fry" },
@@ -18,6 +24,46 @@ const mealPlan = {
 };
 
 export default function MealPrepPage() {
+  const [meals, setMeals] = useState<Meal[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchMeals = async () => {
+      setLoading(true);
+      try {
+        const querySnapshot = await getDocs(collection(db, "menu"));
+        const mealsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Meal));
+        setMeals(mealsData);
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Error fetching menu",
+          description: "Could not retrieve menu data for the meal prep schedule.",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMeals();
+  }, [toast]);
+
+  if (loading) {
+    return (
+        <div className="space-y-6">
+            <h1 className="text-3xl font-bold">Weekly Meal Prep</h1>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Meal Schedule</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-48 w-full" />
+                </CardContent>
+            </Card>
+        </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Weekly Meal Prep</h1>
