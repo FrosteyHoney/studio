@@ -5,6 +5,7 @@ import { getFirestore } from "firebase/firestore";
 const firebaseConfig = {
   apiKey: "AIzaSyA43pY3J8WL8IxeuPiQXqu-1Yv_vJityI0",
   authDomain: "ittedbodiesapp.firebaseapp.com",
+  databaseURL: "https://ittedbodiesapp-default-rtdb.firebaseio.com/",
   projectId: "ittedbodiesapp",
   storageBucket: "ittedbodiesapp.appspot.com",
   messagingSenderId: "91788918036",
