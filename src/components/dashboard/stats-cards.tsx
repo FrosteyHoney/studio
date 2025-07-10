@@ -1,3 +1,6 @@
+
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dumbbell, Flame, Clock } from "lucide-react";
 
@@ -9,22 +12,19 @@ export function StatsCards({ showCalories }: StatsCardsProps) {
     let stats = [
         {
             title: "Workouts this week",
-            value: "4",
+            value: "0",
             icon: Dumbbell,
-            change: "+2 from last week",
         },
         {
             title: "Calories Burned",
-            value: "2,389",
+            value: "0",
             icon: Flame,
-            change: "+120 from last week",
             id: "calories"
         },
         {
             title: "Time Spent",
-            value: "5h 21m",
+            value: "0m",
             icon: Clock,
-            change: "+45m from last week",
         },
     ];
 
@@ -43,7 +43,7 @@ export function StatsCards({ showCalories }: StatsCardsProps) {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{stat.value}</div>
-                        <p className="text-xs text-muted-foreground">{stat.change}</p>
+                        <p className="text-xs text-muted-foreground">Start logging to see your progress!</p>
                     </CardContent>
                 </Card>
             ))}
