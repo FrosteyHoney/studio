@@ -6,14 +6,24 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { collection, getDocs, doc, setDoc } from "firebase/firestore";
+import { collection, getDocs, doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { Flame, Loader2 } from "lucide-react";
+import { Flame, Loader2, Sparkles } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { format, startOfWeek, endOfWeek } from "date-fns";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { generateMealPlan } from "@/ai/flows/generate-meal-plan-flow";
 
 interface Meal {
     id: string;
@@ -35,7 +45,11 @@ export default function MealPrepPage() {
   const [mealPlan, setMealPlan] = useState<Record<string, Record<string, string>>>({});
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isGenerating, setIsGenerating] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [calories, setCalories] = useState("1800");
+  const [currentUserForGeneration, setCurrentUserForGeneration] = useState<User | null>(null);
   const { toast } = useToast();
 
   const mealsByName = useMemo(() => {
@@ -48,10 +62,9 @@ export default function MealPrepPage() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [menuSnapshot, usersSnapshot, mealPlanSnapshot] = await Promise.all([
+      const [menuSnapshot, usersSnapshot] = await Promise.all([
         getDocs(collection(db, "menu")),
         getDocs(collection(db, "users")),
-        getDocs(collection(db, "mealPlans")),
       ]);
 
       const mealsData = menuSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Meal));
@@ -60,16 +73,17 @@ export default function MealPrepPage() {
       const usersData = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
       setUsers(usersData);
       
-      const mealPlanData: Record<string, Record<string, string>> = {};
-      mealPlanSnapshot.forEach(doc => {
-        mealPlanData[doc.id] = doc.data() as Record<string, string>;
-      });
+      const planPromises = usersData.map(user => getDoc(doc(db, "mealPlans", user.id)));
+      const planSnapshots = await Promise.all(planPromises);
 
-      // Initialize plan for users not in the mealPlans collection yet
-      usersData.forEach(user => {
-        if (!mealPlanData[user.id]) {
-          mealPlanData[user.id] = {};
-        }
+      const mealPlanData: Record<string, Record<string, string>> = {};
+      planSnapshots.forEach((planSnap, index) => {
+          const userId = usersData[index].id;
+          if(planSnap.exists()) {
+              mealPlanData[userId] = planSnap.data() as Record<string, string>;
+          } else {
+              mealPlanData[userId] = {};
+          }
       });
       setMealPlan(mealPlanData);
 
@@ -104,8 +118,6 @@ export default function MealPrepPage() {
     try {
       const savePromises = Object.entries(mealPlan).map(([userId, schedule]) => {
         const planRef = doc(db, "mealPlans", userId);
-        // Using setDoc with merge: true will create the document if it doesn't exist,
-        // or update it if it does. This ensures the collection is created.
         return setDoc(planRef, schedule, { merge: true });
       });
       await Promise.all(savePromises);
@@ -123,6 +135,55 @@ export default function MealPrepPage() {
       setIsSaving(false);
     }
   };
+
+  const handleGeneratePlan = async () => {
+    if (!currentUserForGeneration || !calories) return;
+    setIsGenerating(currentUserForGeneration.id);
+    setDialogOpen(false);
+    try {
+      const allMeals = (await getDocs(collection(db, "menu"))).docs.map(doc => doc.data() as { name: string, calories: number });
+      
+      const result = await generateMealPlan({
+        calorieTarget: parseInt(calories, 10),
+        meals: allMeals
+      });
+
+      setMealPlan(prev => {
+        const newPlan = { ...prev[currentUserForGeneration.id] };
+        daysOfWeek.forEach(day => {
+          mealTypes.forEach(mealType => {
+            const planKey = `${day}_${mealType}`;
+            const generatedMeal = result.plan[day.toLowerCase() as keyof typeof result.plan]?.[mealType.toLowerCase() as keyof typeof result.plan.monday];
+            if(generatedMeal && meals.find(m => m.name === generatedMeal)) {
+              newPlan[planKey] = generatedMeal;
+            }
+          });
+        });
+        return { ...prev, [currentUserForGeneration.id]: newPlan };
+      });
+
+      toast({
+        title: "Plan Generated!",
+        description: `A new meal plan has been created for ${currentUserForGeneration.name}.`,
+      });
+
+    } catch (error: any) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "AI Generation Failed",
+        description: error.message || "The AI could not generate a meal plan. Please try again.",
+      });
+    } finally {
+      setIsGenerating(null);
+      setCurrentUserForGeneration(null);
+    }
+  };
+  
+  const openGenerationDialog = (user: User) => {
+    setCurrentUserForGeneration(user);
+    setDialogOpen(true);
+  }
 
   const calculateDailyCalories = (userId: string, day: string) => {
     const userPlan = mealPlan[userId] || {};
@@ -168,7 +229,7 @@ export default function MealPrepPage() {
         <h1 className="text-3xl font-bold">Weekly Meal Prep</h1>
         <Button onClick={handleSaveChanges} disabled={isSaving}>
           {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save Changes
+          Save All Changes
         </Button>
       </div>
       <Card>
@@ -189,14 +250,26 @@ export default function MealPrepPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[150px] min-w-[150px] sticky left-0 bg-card z-10">Member</TableHead>
+                  <TableHead className="w-[250px] min-w-[250px] sticky left-0 bg-card z-10">Member</TableHead>
                   {daysOfWeek.map(day => <TableHead key={day} className="min-w-[220px]">{day}</TableHead>)}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredUsers.length > 0 ? filteredUsers.map((user) => (
                   <TableRow key={user.id}>
-                    <TableCell className="font-medium sticky left-0 bg-card z-10">{user.name}</TableCell>
+                    <TableCell className="font-medium sticky left-0 bg-card z-10">
+                      <div className="flex items-center gap-2">
+                        <span>{user.name}</span>
+                        <Button size="sm" variant="outline" onClick={() => openGenerationDialog(user)} disabled={!!isGenerating}>
+                          {isGenerating === user.id ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          ) : (
+                            <Sparkles className="mr-2 h-4 w-4" />
+                          )}
+                          Generate Plan
+                        </Button>
+                      </div>
+                    </TableCell>
                     {daysOfWeek.map(day => (
                       <TableCell key={day}>
                         <div className="grid gap-2">
@@ -244,6 +317,35 @@ export default function MealPrepPage() {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Generate Meal Plan for {currentUserForGeneration?.name}</DialogTitle>
+            <DialogDescription>
+              Enter a daily calorie target. The AI will generate a 7-day meal plan based on the available meals.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="calories" className="text-right">
+                Daily Calories
+              </Label>
+              <Input
+                id="calories"
+                type="number"
+                value={calories}
+                onChange={(e) => setCalories(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleGeneratePlan} disabled={!calories}>Generate</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
