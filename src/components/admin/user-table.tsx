@@ -41,7 +41,7 @@ interface User {
   id: string; 
   name: string; 
   email: string; 
-  status: 'Active' | 'Inactive' | 'Online'; 
+  status: 'Active' | 'Inactive'; 
   joined: string;
   height: number;
   weight: number;
@@ -101,17 +101,6 @@ export function UserTable() {
       });
     }
   };
-  
-  const getStatusVariant = (status: User['status']) => {
-    switch (status) {
-        case 'Online':
-            return 'default'; // Uses primary color
-        case 'Active':
-            return 'secondary';
-        default:
-            return 'outline';
-    }
-  }
 
   const filteredUsers = users.filter(user => 
     user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -161,7 +150,7 @@ export function UserTable() {
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
-                  <Badge variant={getStatusVariant(user.status)}>{user.status}</Badge>
+                  <Badge variant={user.status === 'Active' ? 'default' : 'secondary'}>{user.status}</Badge>
                 </TableCell>
                 <TableCell>{user.joined}</TableCell>
                 <TableCell>{user.height}</TableCell>
