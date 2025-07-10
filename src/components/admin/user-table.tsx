@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableBody,
@@ -8,40 +10,132 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { UserEditForm } from "./user-edit-form";
 
-const users = [
-  { id: "1", name: "John Doe", email: "john@example.com", status: "Active", joined: "2023-10-01" },
-  { id: "2", name: "Jane Smith", email: "jane@example.com", status: "Active", joined: "2023-10-05" },
-  { id: "3", name: "Peter Jones", email: "peter@example.com", status: "Inactive", joined: "2023-09-15" },
+const initialUsers = [
+  { 
+    id: "1", 
+    name: "John Doe", 
+    email: "john@example.com", 
+    status: "Active", 
+    joined: "2023-10-01",
+    height: 180,
+    weight: 75,
+    bmi: 23.1,
+    bodyFat: 15,
+    muscleMass: 63
+  },
+  { 
+    id: "2", 
+    name: "Jane Smith", 
+    email: "jane@example.com", 
+    status: "Active", 
+    joined: "2023-10-05",
+    height: 165,
+    weight: 58,
+    bmi: 21.3,
+    bodyFat: 22,
+    muscleMass: 45
+  },
+  { 
+    id: "3", 
+    name: "Peter Jones", 
+    email: "peter@example.com", 
+    status: "Inactive", 
+    joined: "2023-09-15",
+    height: 175,
+    weight: 85,
+    bmi: 27.8,
+    bodyFat: 20,
+    muscleMass: 70
+  },
 ];
 
+type User = typeof initialUsers[0];
+
 export function UserTable() {
+  const [users, setUsers] = useState(initialUsers);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+
+  const handleEdit = (user: User) => {
+    setEditingUser(user);
+    setDialogOpen(true);
+  };
+
+  const filteredUsers = users.filter(user => 
+    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Date Joined</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {users.map((user) => (
-          <TableRow key={user.id}>
-            <TableCell>{user.name}</TableCell>
-            <TableCell>{user.email}</TableCell>
-            <TableCell>
-              <Badge variant={user.status === 'Active' ? 'default' : 'secondary'}>{user.status}</Badge>
-            </TableCell>
-            <TableCell>{user.joined}</TableCell>
-            <TableCell className="text-right">
-              <Button variant="ghost" size="sm">Edit</Button>
-            </TableCell>
+    <>
+      <div className="w-full">
+        <Input 
+          placeholder="Search by name or email..." 
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-sm"
+        />
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Date Joined</TableHead>
+            <TableHead>Height (cm)</TableHead>
+            <TableHead>Weight (kg)</TableHead>
+            <TableHead>BMI</TableHead>
+            <TableHead>Body Fat (%)</TableHead>
+            <TableHead>Muscle Mass (kg)</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {filteredUsers.map((user) => (
+            <TableRow key={user.id}>
+              <TableCell>{user.name}</TableCell>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>
+                <Badge variant={user.status === 'Active' ? 'default' : 'secondary'}>{user.status}</Badge>
+              </TableCell>
+              <TableCell>{user.joined}</TableCell>
+              <TableCell>{user.height}</TableCell>
+              <TableCell>{user.weight}</TableCell>
+              <TableCell>{user.bmi}</TableCell>
+              <TableCell>{user.bodyFat}</TableCell>
+              <TableCell>{user.muscleMass}</TableCell>
+              <TableCell className="text-right">
+                <Button variant="outline" size="sm" onClick={() => handleEdit(user)}>Edit</Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit User: {editingUser?.name}</DialogTitle>
+            <DialogDescription>Update the user's health and profile information.</DialogDescription>
+          </DialogHeader>
+          <UserEditForm 
+            setOpen={setDialogOpen} 
+            initialData={editingUser} 
+          />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

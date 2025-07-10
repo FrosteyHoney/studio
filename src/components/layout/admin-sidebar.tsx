@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart, Users, CalendarCheck, MenuSquare, Dumbbell } from "lucide-react";
+import { BarChart, Users, CalendarCheck, MenuSquare, Dumbbell, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -10,6 +10,7 @@ const navItems = [
   { href: "/admin/users", icon: Users, label: "Users" },
   { href: "/admin/bookings", icon: CalendarCheck, label: "Bookings" },
   { href: "/admin/menu", icon: MenuSquare, label: "Menu" },
+  { href: "/admin/settings", icon: Settings, label: "Settings" },
 ];
 
 export function AdminSidebar() {
@@ -32,7 +33,7 @@ export function AdminSidebar() {
                 href={item.href}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-                  pathname.startsWith(item.href) && "bg-muted text-primary"
+                  (pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/admin/dashboard')) && "bg-muted text-primary"
                 )}
               >
                 <item.icon className="h-4 w-4" />
