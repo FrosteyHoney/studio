@@ -58,10 +58,13 @@ interface State {
 
 const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
 
-const addToRemoveQueue = (toastId: string) => {
+const addToRemoveQueue = (toastId: string, isDestructive: boolean) => {
   if (toastTimeouts.has(toastId)) {
     return
   }
+  
+  // Do not automatically remove destructive toasts
+  if(isDestructive) return;
 
   const timeout = setTimeout(() => {
     toastTimeouts.delete(toastId)
@@ -96,10 +99,11 @@ export const reducer = (state: State, action: Action): State => {
       // ! Side effects ! - This could be extracted into a dismissToast() action,
       // but I'll keep it here for simplicity
       if (toastId) {
-        addToRemoveQueue(toastId)
+        const toast = state.toasts.find(t => t.id === toastId);
+        addToRemoveQueue(toastId, toast?.variant === 'destructive')
       } else {
         state.toasts.forEach((toast) => {
-          addToRemoveQueue(toast.id)
+          addToRemoveQueue(toast.id, toast.variant === 'destructive')
         })
       }
 
