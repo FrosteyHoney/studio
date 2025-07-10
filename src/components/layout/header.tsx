@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -12,14 +13,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Dumbbell, LogOut, User as UserIcon, ShieldCheck, Settings, Utensils } from 'lucide-react';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Dumbbell, LogOut, User as UserIcon, ShieldCheck, Settings, Menu } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export function Header() {
   const { user, isAdmin, loading } = useAuth();
   const router = useRouter();
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -30,9 +34,62 @@ export function Header() {
     }
   };
 
+  const MobileNav = () => (
+    <Sheet open={isMobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+      <SheetTrigger asChild>
+        <Button variant="ghost" className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden">
+            <Menu className="h-6 w-6" />
+            <span className="sr-only">Toggle Menu</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="pr-0">
+        <Link
+            href="/"
+            className="flex items-center gap-2"
+            onClick={() => setMobileMenuOpen(false)}
+        >
+          <Dumbbell className="h-6 w-6 text-primary" />
+          <span className="font-bold">Committed Bodies Hub</span>
+        </Link>
+        <div className="my-4 h-[calc(100vh-8rem)]">
+          <div className="flex flex-col space-y-3">
+             {user && (
+              <>
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="transition-colors hover:text-foreground/80"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/food"
+                   onClick={() => setMobileMenuOpen(false)}
+                  className="transition-colors hover:text-foreground/80"
+                >
+                  Food
+                </Link>
+              </>
+            )}
+             {isAdmin && (
+               <Link
+                href="/admin"
+                 onClick={() => setMobileMenuOpen(false)}
+                className="transition-colors hover:text-foreground/80"
+              >
+                Admin
+              </Link>
+            )}
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
+  )
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center">
+        <MobileNav />
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <Dumbbell className="h-6 w-6 text-primary" />
