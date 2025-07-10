@@ -12,7 +12,7 @@ import {
 import { MenuForm, type MenuItem } from "./menu-form";
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc, writeBatch } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "../ui/skeleton";
@@ -29,10 +29,30 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
+import { Loader2 } from "lucide-react";
+
+const healthyMealsSeedData = [
+    // Breakfast
+    { name: 'Quinoa Porridge', price: 85.00, calories: 350, description: 'Warm quinoa porridge with berries, nuts, and a drizzle of honey.', ingredients: 'Quinoa, Almond Milk, Berries, Almonds, Honey', image: 'https://placehold.co/400x300.png' },
+    { name: 'Avocado Toast with Egg', price: 95.00, calories: 400, description: 'Sourdough toast with smashed avocado, a poached egg, and chili flakes.', ingredients: 'Sourdough Bread, Avocado, Egg, Chili Flakes', image: 'https://placehold.co/400x300.png' },
+    { name: 'Greek Yogurt Parfait', price: 75.00, calories: 320, description: 'Layers of Greek yogurt, granola, and fresh fruit.', ingredients: 'Greek Yogurt, Granola, Mixed Berries', image: 'https://placehold.co/400x300.png' },
+
+    // Lunch
+    { name: 'Grilled Chicken Salad', price: 120.00, calories: 450, description: 'Mixed greens with grilled chicken breast, cherry tomatoes, cucumber, and a light vinaigrette.', ingredients: 'Chicken Breast, Mixed Greens, Cherry Tomatoes, Cucumber, Vinaigrette', image: 'https://placehold.co/400x300.png' },
+    { name: 'Salmon with Asparagus', price: 160.00, calories: 550, description: 'Grilled salmon fillet served with steamed asparagus and a lemon wedge.', ingredients: 'Salmon Fillet, Asparagus, Lemon, Olive Oil', image: 'https://placehold.co/400x300.png' },
+    { name: 'Lentil Soup', price: 90.00, calories: 380, description: 'A hearty and nutritious soup made with lentils, carrots, celery, and spices.', ingredients: 'Lentils, Carrots, Celery, Vegetable Broth, Spices', image: 'https://placehold.co/400x300.png' },
+    { name: 'Quinoa Bowl with Roasted Vegetables', price: 110.00, calories: 480, description: 'A vibrant bowl of quinoa topped with roasted seasonal vegetables and a tahini dressing.', ingredients: 'Quinoa, Bell Peppers, Zucchini, Broccoli, Tahini Dressing', image: 'https://placehold.co/400x300.png' },
+
+    // Dinner
+    { name: 'Lean Beef Steak with Sweet Potato', price: 180.00, calories: 600, description: 'A lean cut of beef steak, grilled to perfection, served with roasted sweet potato wedges.', ingredients: 'Beef Steak, Sweet Potato, Rosemary, Garlic', image: 'https://placehold.co/400x300.png' },
+    { name: 'Tofu Stir-fry', price: 115.00, calories: 420, description: 'Crispy tofu stir-fried with a variety of colorful vegetables in a light soy-ginger sauce.', ingredients: 'Tofu, Broccoli, Carrots, Snap Peas, Soy Sauce, Ginger', image: 'https://placehold.co/400x300.png' },
+    { name: 'Baked Cod with Greens', price: 150.00, calories: 490, description: 'Flaky baked cod served on a bed of sautéed spinach and kale.', ingredients: 'Cod Fillet, Spinach, Kale, Garlic, Lemon', image: 'https://placehold.co/400x300.png' },
+];
 
 export function MenuTable() {
   const [meals, setMeals] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSeeding, setIsSeeding] = useState(false);
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [editingMeal, setEditingMeal] = useState<MenuItem | null>(null);
   const { toast } = useToast();
@@ -85,6 +105,34 @@ export function MenuTable() {
     }
   };
 
+  const handleSeedMenu = async () => {
+    setIsSeeding(true);
+    try {
+        const batch = writeBatch(db);
+        const menuCollection = collection(db, "menu");
+        
+        healthyMealsSeedData.forEach(meal => {
+            const docRef = doc(menuCollection); // Automatically generate a new ID
+            batch.set(docRef, meal);
+        });
+
+        await batch.commit();
+        toast({
+            title: "Menu Seeded!",
+            description: `${healthyMealsSeedData.length} healthy meals have been added to the menu.`,
+        });
+        fetchMeals(); // Refresh the list
+    } catch (error) {
+        toast({
+            variant: "destructive",
+            title: "Error Seeding Menu",
+            description: "There was a problem adding the meals to the database.",
+        });
+    } finally {
+        setIsSeeding(false);
+    }
+  }
+
   const getSafeImageUrl = (url: string | undefined) => {
     const defaultImage = "https://placehold.co/400x300.png";
     if (!url || (!url.startsWith('http://') && !url.startsWith('https://'))) {
@@ -101,7 +149,8 @@ export function MenuTable() {
   if (loading) {
     return (
         <div className="space-y-4">
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
+                <Skeleton className="h-10 w-32" />
                 <Skeleton className="h-10 w-32" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
@@ -125,7 +174,11 @@ export function MenuTable() {
 
   return (
     <>
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        <Button onClick={handleSeedMenu} variant="outline" disabled={isSeeding}>
+            {isSeeding ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            Seed Healthy Menu
+        </Button>
         <Button onClick={handleAddNew}>Add New Meal</Button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
@@ -169,7 +222,7 @@ export function MenuTable() {
                 <Card>
                     <CardContent className="p-6">
                         <h3 className="text-xl font-semibold">No meals found</h3>
-                        <p className="text-muted-foreground mt-2">Add a meal to get started.</p>
+                        <p className="text-muted-foreground mt-2">Get started by adding a meal or seeding a healthy menu.</p>
                     </CardContent>
                 </Card>
             </div>
