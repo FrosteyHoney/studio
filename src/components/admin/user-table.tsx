@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -19,7 +20,19 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { UserEditForm } from "./user-edit-form";
+import { useToast } from "@/hooks/use-toast";
 
 const initialUsers = [
   { 
@@ -67,10 +80,20 @@ export function UserTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const { toast } = useToast();
 
   const handleEdit = (user: User) => {
     setEditingUser(user);
     setDialogOpen(true);
+  };
+  
+  const handleDeleteUser = (userId: string) => {
+    // Here you would typically call an API to delete the user from your database
+    setUsers(users.filter(user => user.id !== userId));
+    toast({
+      title: "User Deleted",
+      description: "The user has been successfully removed.",
+    });
   };
 
   const filteredUsers = users.filter(user => 
@@ -117,8 +140,28 @@ export function UserTable() {
               <TableCell>{user.bmi}</TableCell>
               <TableCell>{user.bodyFat}</TableCell>
               <TableCell>{user.muscleMass}</TableCell>
-              <TableCell className="text-right">
+              <TableCell className="text-right space-x-2">
                 <Button variant="outline" size="sm" onClick={() => handleEdit(user)}>Edit</Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="sm">Delete</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete the user account
+                        and remove their data from our servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDeleteUser(user.id)}>
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </TableCell>
             </TableRow>
           ))}
