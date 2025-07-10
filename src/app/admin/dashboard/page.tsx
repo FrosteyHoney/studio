@@ -3,9 +3,9 @@ import { Users, CalendarCheck, DollarSign } from "lucide-react";
 
 export default function AdminDashboardPage() {
     const summary = [
-        { title: "Total Users", value: "152", icon: Users },
-        { title: "Active Bookings", value: "89", icon: CalendarCheck },
-        { title: "Revenue (This Month)", value: "$4,250", icon: DollarSign },
+        { title: "Total Users", value: "3", icon: Users },
+        { title: "Active Bookings", value: "5", icon: CalendarCheck },
+        { title: "Revenue (This Month)", value: "R 79,500", icon: DollarSign },
     ];
 
     return (
