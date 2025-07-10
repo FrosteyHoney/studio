@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -22,9 +23,9 @@ import { useState } from "react";
 import Image from "next/image";
 
 const initialMeals = [
-  { id: "1", name: "Lean Chicken & Quinoa", calories: 450, image: "https://placehold.co/40x40.png" },
-  { id: "2", name: "Salmon with Asparagus", calories: 520, image: "https://placehold.co/40x40.png" },
-  { id: "3", name: "Tofu Stir-fry", calories: 380, image: "https://placehold.co/40x40.png" },
+  { id: "1", name: "Lean Chicken & Quinoa", calories: 450, price: 120, image: "https://placehold.co/40x40.png" },
+  { id: "2", name: "Salmon with Asparagus", calories: 520, price: 150, image: "https://placehold.co/40x40.png" },
+  { id: "3", name: "Tofu Stir-fry", calories: 380, price: 110, image: "https://placehold.co/40x40.png" },
 ];
 
 export function MenuTable() {
@@ -53,6 +54,7 @@ export function MenuTable() {
             <TableHead>Image</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Calories</TableHead>
+            <TableHead>Price (R)</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -64,6 +66,7 @@ export function MenuTable() {
               </TableCell>
               <TableCell>{meal.name}</TableCell>
               <TableCell>{meal.calories}</TableCell>
+              <TableCell>{meal.price.toFixed(2)}</TableCell>
               <TableCell className="text-right space-x-2">
                 <Button variant="outline" size="sm" onClick={() => handleEdit(meal)}>Edit</Button>
                 <Button variant="destructive" size="sm">Delete</Button>

@@ -142,10 +142,10 @@ export function UserTable() {
               <TableCell>{user.muscleMass}</TableCell>
               <TableCell className="text-right">
                 <div className="inline-flex rounded-md shadow-sm">
-                    <Button variant="outline" size="sm" className="rounded-r-none" onClick={() => handleEdit(user)}>Edit</Button>
+                    <Button variant="outline" size="sm" className="rounded-r-none px-3" onClick={() => handleEdit(user)}>Edit</Button>
                     <AlertDialog>
                     <AlertDialogTrigger asChild>
-                        <Button variant="destructive" size="sm" className="rounded-l-none px-3">Delete</Button>
+                        <Button variant="destructive" size="sm" className="rounded-l-none">Delete</Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>

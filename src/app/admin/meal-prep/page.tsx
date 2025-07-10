@@ -1,0 +1,65 @@
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+const meals = [
+  { id: "1", name: "Lean Chicken & Quinoa" },
+  { id: "2", name: "Salmon with Asparagus" },
+  { id: "3", name: "Tofu Stir-fry" },
+];
+
+const mealPlan = {
+  "John Doe": { "Monday": "Lean Chicken & Quinoa", "Wednesday": "Salmon with Asparagus", "Friday": "Tofu Stir-fry" },
+  "Jane Smith": { "Tuesday": "Salmon with Asparagus", "Thursday": "Lean Chicken & Quinoa" },
+  "Peter Jones": { "Monday": "Tofu Stir-fry", "Wednesday": "Tofu Stir-fry", "Friday": "Lean Chicken & Quinoa" },
+};
+
+export default function MealPrepPage() {
+  return (
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold">Weekly Meal Prep</h1>
+      <Card>
+        <CardHeader>
+          <CardTitle>Meal Schedule</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[150px]">Member</TableHead>
+                  {daysOfWeek.map(day => <TableHead key={day}>{day}</TableHead>)}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {Object.entries(mealPlan).map(([name, schedule]) => (
+                  <TableRow key={name}>
+                    <TableCell className="font-medium">{name}</TableCell>
+                    {daysOfWeek.map(day => (
+                      <TableCell key={day}>
+                        <Select defaultValue={schedule[day as keyof typeof schedule] || "none"}>
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Select a meal" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">None</SelectItem>
+                            {meals.map(meal => (
+                               <SelectItem key={meal.id} value={meal.name}>{meal.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

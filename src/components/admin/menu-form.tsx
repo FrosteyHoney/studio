@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -19,6 +20,7 @@ import { Dispatch, SetStateAction } from "react";
 const formSchema = z.object({
   name: z.string().min(3, { message: "Name must be at least 3 characters." }),
   calories: z.coerce.number().min(0, { message: "Calories must be a positive number." }),
+  price: z.coerce.number().min(0, { message: "Price must be a positive number." }),
   image: z.string().url({ message: "Please enter a valid URL." }),
 });
 
@@ -34,6 +36,7 @@ export function MenuForm({ setOpen, initialData }: MenuFormProps) {
     defaultValues: initialData || {
       name: "",
       calories: 0,
+      price: 0,
       image: "",
     },
   });
@@ -64,19 +67,34 @@ export function MenuForm({ setOpen, initialData }: MenuFormProps) {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="calories"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Calories</FormLabel>
-              <FormControl>
-                <Input type="number" placeholder="e.g., 450" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-2 gap-4">
+            <FormField
+            control={form.control}
+            name="calories"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Calories</FormLabel>
+                <FormControl>
+                    <Input type="number" placeholder="e.g., 450" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="price"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Price (R)</FormLabel>
+                <FormControl>
+                    <Input type="number" step="0.01" placeholder="e.g., 120.00" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        </div>
         <FormField
           control={form.control}
           name="image"
