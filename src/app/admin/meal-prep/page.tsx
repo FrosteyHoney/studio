@@ -96,9 +96,9 @@ export default function MealPrepPage() {
     try {
       const savePromises = Object.entries(mealPlan).map(([userId, schedule]) => {
         const planRef = doc(db, "mealPlans", userId);
-        // Ensure we don't save empty schedules if a user has no meals planned
-        const filteredSchedule = Object.fromEntries(Object.entries(schedule).filter(([, meal]) => meal));
-        return setDoc(planRef, filteredSchedule);
+        // Using setDoc with merge: true will create the document if it doesn't exist,
+        // or update it if it does. This ensures the collection is created.
+        return setDoc(planRef, schedule, { merge: true });
       });
       await Promise.all(savePromises);
       toast({
