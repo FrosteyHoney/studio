@@ -1,10 +1,36 @@
+
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, CalendarCheck, DollarSign, Activity } from "lucide-react";
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminDashboardPage() {
+    const [userCount, setUserCount] = useState<number | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchUserCount = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, "users"));
+                setUserCount(querySnapshot.size);
+            } catch (error) {
+                console.error("Error fetching user count: ", error);
+                setUserCount(0);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserCount();
+    }, []);
+
     const summary = [
-        { title: "Total Users", value: "3", icon: Users },
-        { title: "Active Bookings", value: "5", icon: CalendarCheck },
+        { title: "Total Users", value: userCount, icon: Users, id: "users" },
+        { title: "Active Bookings", value: 5, icon: CalendarCheck },
         { title: "Revenue (This Month)", value: "R 79,500", icon: DollarSign },
     ];
 
@@ -14,7 +40,6 @@ export default function AdminDashboardPage() {
       { user: "Peter Jones", action: "cancelled a booking:", item: "Tofu Stir-fry" },
       { user: "Admin", action: "updated the menu item:", item: "Salmon with Asparagus" },
     ];
-
 
     return (
         <div className="space-y-6">
@@ -27,7 +52,11 @@ export default function AdminDashboardPage() {
                             <item.icon className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{item.value}</div>
+                            {loading && item.id === 'users' ? (
+                                <Skeleton className="h-8 w-1/2" />
+                            ) : (
+                                <div className="text-2xl font-bold">{item.value}</div>
+                            )}
                         </CardContent>
                     </Card>
                 ))}
