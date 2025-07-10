@@ -3,12 +3,13 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAaJRgNkNUTeJhTVAu0IcAJNfsqmL987-U",
-  authDomain: "apptest-b0690.firebaseapp.com",
-  projectId: "apptest-b0690",
-  storageBucket: "apptest-b0690.appspot.com",
-  messagingSenderId: "439946723338",
-  appId: "1:439946723338:web:74f68cd13b6fc9fff29ff3"
+  apiKey: "AIzaSyA43pY3J8WL8IxeuPiQXqu-1Yv_vJityI0",
+  authDomain: "ittedbodiesapp.firebaseapp.com",
+  projectId: "ittedbodiesapp",
+  storageBucket: "ittedbodiesapp.appspot.com",
+  messagingSenderId: "91788918036",
+  appId: "1:91788918036:web:d8e8c235f5b168d6685601",
+  measurementId: "G-745M66YCZ9"
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();

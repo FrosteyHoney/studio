@@ -2,8 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { getAuth } from "firebase/auth";
-import { app } from '@/lib/firebase'; // Import the initialized app
+import { auth } from '@/lib/firebase';
 
 interface AuthContextType {
   user: User | null;
@@ -23,7 +22,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const auth = getAuth(app); // Get auth instance from the initialized app
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       // Mock admin check for demonstration.
@@ -41,7 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   
   return (
     <AuthContext.Provider value={{ user, loading, isAdmin }}>
-      {loading ? <div className="w-full h-screen flex items-center justify-center"><p>Loading...</p></div> : children}
+      {children}
     </AuthContext.Provider>
   );
 };
