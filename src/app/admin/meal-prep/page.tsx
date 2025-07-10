@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { format, startOfWeek, endOfWeek } from "date-fns";
 
 interface Meal {
@@ -33,6 +34,7 @@ export default function MealPrepPage() {
   const [mealPlan, setMealPlan] = useState<Record<string, Record<string, string>>>({});
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
   const fetchData = useCallback(async () => {
@@ -119,6 +121,10 @@ export default function MealPrepPage() {
   const weekEnd = endOfWeek(today, { weekStartsOn: 1 }); // Sunday
   const weekRange = `${format(weekStart, 'MMMM d')} - ${format(weekEnd, 'MMMM d')}`;
 
+  const filteredUsers = users.filter(user =>
+    user.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) {
     return (
         <div className="space-y-6">
@@ -150,6 +156,14 @@ export default function MealPrepPage() {
           <CardDescription>{weekRange}</CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="mb-4">
+              <Input 
+                placeholder="Search by member name..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="max-w-sm"
+              />
+          </div>
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -159,7 +173,7 @@ export default function MealPrepPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {users.map((user) => (
+                {filteredUsers.length > 0 ? filteredUsers.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell className="font-medium">{user.name}</TableCell>
                     {daysOfWeek.map(day => (
@@ -192,7 +206,13 @@ export default function MealPrepPage() {
                       </TableCell>
                     ))}
                   </TableRow>
-                ))}
+                )) : (
+                  <TableRow>
+                    <TableCell colSpan={daysOfWeek.length + 1} className="h-24 text-center">
+                      No members found.
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </div>
