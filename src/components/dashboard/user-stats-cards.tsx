@@ -7,7 +7,7 @@ import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowDown, ArrowUp, Weight, Ruler, BarChart, Percent } from "lucide-react";
+import { ArrowDown, ArrowUp, Weight, Ruler, BarChart, Percent, Dumbbell } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface UserStats {
@@ -113,10 +113,13 @@ export function UserStatsCards() {
         <Card key={stat.title}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-            {stat.change !== 0 && <StatChangeIndicator change={stat.change} good={stat.good as 'up' | 'down'} />}
+            <stat.icon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stat.value}</div>
+            <div className="flex items-center justify-between">
+                <div className="text-2xl font-bold">{stat.value}</div>
+                {stat.change !== 0 && <StatChangeIndicator change={stat.change} good={stat.good as 'up' | 'down'} />}
+            </div>
           </CardContent>
         </Card>
       ))}
