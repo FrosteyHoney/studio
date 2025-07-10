@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, CalendarCheck, DollarSign } from "lucide-react";
+import { Users, CalendarCheck, DollarSign, Activity } from "lucide-react";
 
 export default function AdminDashboardPage() {
     const summary = [
@@ -7,6 +7,14 @@ export default function AdminDashboardPage() {
         { title: "Active Bookings", value: "5", icon: CalendarCheck },
         { title: "Revenue (This Month)", value: "R 79,500", icon: DollarSign },
     ];
+
+    const recentActivity = [
+      { user: "John Doe", action: "booked a meal:", item: "Lean Chicken & Quinoa" },
+      { user: "Jane Smith", action: "updated their profile." },
+      { user: "Peter Jones", action: "cancelled a booking:", item: "Tofu Stir-fry" },
+      { user: "Admin", action: "updated the menu item:", item: "Salmon with Asparagus" },
+    ];
+
 
     return (
         <div className="space-y-6">
@@ -27,10 +35,21 @@ export default function AdminDashboardPage() {
             <div>
                 <Card>
                     <CardHeader>
-                        <CardTitle>Recent Activity</CardTitle>
+                        <CardTitle className="flex items-center gap-2">
+                          <Activity className="h-5 w-5" />
+                          Recent Activity
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-muted-foreground">Activity feed will be displayed here.</p>
+                        <ul className="space-y-3">
+                          {recentActivity.map((activity, index) => (
+                            <li key={index} className="flex items-center text-sm">
+                              <span className="font-semibold w-24">{activity.user}</span>
+                              <span className="text-muted-foreground">{activity.action}</span>
+                              {activity.item && <span className="ml-1 font-medium text-primary">{activity.item}</span>}
+                            </li>
+                          ))}
+                        </ul>
                     </CardContent>
                 </Card>
             </div>
