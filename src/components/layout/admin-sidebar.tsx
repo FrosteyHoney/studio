@@ -3,13 +3,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart, Users, CalendarCheck, MenuSquare, Dumbbell, Settings, ChefHat } from "lucide-react";
+import { BarChart, Users, MenuSquare, Dumbbell, Settings, ChefHat } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/admin/dashboard", icon: BarChart, label: "Dashboard" },
   { href: "/admin/users", icon: Users, label: "Users" },
-  { href: "/admin/bookings", icon: CalendarCheck, label: "Bookings" },
   { href: "/admin/menu", icon: MenuSquare, label: "Menu" },
   { href: "/admin/meal-prep", icon: ChefHat, label: "Meal Prep" },
   { href: "/admin/settings", icon: Settings, label: "Settings" },

@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Skeleton } from "../ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 
 interface Meal {
     id: string;
@@ -23,6 +24,7 @@ interface Meal {
 export function MealPlan() {
     const [meals, setMeals] = useState<Meal[]>([]);
     const [loading, setLoading] = useState(true);
+    const { toast } = useToast();
 
     useEffect(() => {
         const fetchMeals = async () => {
@@ -35,9 +37,17 @@ export function MealPlan() {
         fetchMeals();
     }, []);
 
+    const handleBookClick = () => {
+        toast({
+            title: "Booking Not Available",
+            description: "This functionality is currently disabled.",
+            variant: "destructive",
+        });
+    }
+
     return (
         <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">Select a day and book your meal for the upcoming week.</p>
+            <p className="text-sm text-muted-foreground">Select a day and see available meals for the upcoming week.</p>
             <div className="grid gap-8 md:grid-cols-2">
                 <div className="flex justify-center">
                     <Calendar
@@ -66,7 +76,7 @@ export function MealPlan() {
                             </CardContent>
                             <CardFooter className="p-4 flex flex-col items-end gap-1">
                                 <span className="font-bold text-lg">R{meal.price.toFixed(2)}</span>
-                                <Button variant="outline">Book</Button>
+                                <Button variant="outline" onClick={handleBookClick} disabled>Book</Button>
                             </CardFooter>
                         </Card>
                     ))}

@@ -2,7 +2,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, CalendarCheck, DollarSign, Activity } from "lucide-react";
+import { Users, DollarSign, Activity } from "lucide-react";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -10,7 +10,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminDashboardPage() {
     const [userCount, setUserCount] = useState<number | null>(null);
-    const [bookingCount, setBookingCount] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -19,15 +18,9 @@ export default function AdminDashboardPage() {
                 const usersSnapshot = await getDocs(collection(db, "users"));
                 setUserCount(usersSnapshot.size);
 
-                // For now, we assume a 'bookings' collection. 
-                // The count will be 0 until booking functionality is added.
-                const bookingsSnapshot = await getDocs(collection(db, "bookings"));
-                setBookingCount(bookingsSnapshot.size);
-
             } catch (error) {
                 console.error("Error fetching stats: ", error);
                 setUserCount(0);
-                setBookingCount(0);
             } finally {
                 setLoading(false);
             }
@@ -38,7 +31,6 @@ export default function AdminDashboardPage() {
 
     const summary = [
         { title: "Total Users", value: userCount, icon: Users, id: "users" },
-        { title: "Active Bookings", value: bookingCount, icon: CalendarCheck, id: "bookings" },
         { title: "Revenue (This Month)", value: "R 0.00", icon: DollarSign },
     ];
 
