@@ -25,10 +25,7 @@ const formSchema = z.object({
   price: z.coerce.number().min(0, { message: "Price must be a positive number." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
   ingredients: z.string().min(3, { message: "Ingredients must be at least 3 characters." }),
-  image: z.string().url({ message: "Please enter a valid URL." }).refine(
-    (url) => url.startsWith("https://placehold.co/"),
-    { message: "Only images from placehold.co are allowed." }
-  ).optional().or(z.literal('')),
+  image: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
 });
 
 export type MenuItem = z.infer<typeof formSchema> & { id: string };
