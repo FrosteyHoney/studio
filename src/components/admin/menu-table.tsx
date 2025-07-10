@@ -1,14 +1,6 @@
 
 "use client";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -35,6 +27,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import { Badge } from "../ui/badge";
 
 export function MenuTable() {
   const [meals, setMeals] = useState<MenuItem[]>([]);
@@ -42,6 +36,25 @@ export function MenuTable() {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [editingMeal, setEditingMeal] = useState<MenuItem | null>(null);
   const { toast } = useToast();
+
+  const getSafeImageUrl = (url: string | undefined) => {
+    const defaultImage = "https://placehold.co/400x300.png";
+    if (!url) {
+      return defaultImage;
+    }
+    try {
+      const parsedUrl = new URL(url);
+      // Only allow placehold.co images
+      if (parsedUrl.hostname === 'placehold.co') {
+        return url;
+      }
+    } catch (error) {
+      // Invalid URL format
+      return defaultImage;
+    }
+    // Hostname not allowed
+    return defaultImage;
+  };
 
   const fetchMeals = useCallback(async () => {
     setLoading(true);
@@ -91,31 +104,27 @@ export function MenuTable() {
     }
   };
 
-  const getSafeImageUrl = (url: string | undefined) => {
-    const defaultImage = "https://placehold.co/40x40.png";
-    if (!url) {
-      return defaultImage;
-    }
-    try {
-      const parsedUrl = new URL(url);
-      if (parsedUrl.hostname === 'placehold.co') {
-        return url;
-      }
-    } catch (error) {
-      // Invalid URL format
-      return defaultImage;
-    }
-    // Hostname not allowed
-    return defaultImage;
-  };
-
   if (loading) {
     return (
         <div className="space-y-4">
             <div className="flex justify-end">
                 <Skeleton className="h-10 w-32" />
             </div>
-            <Skeleton className="h-[200px] w-full" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+              {[...Array(4)].map((_, i) => (
+                <Card key={i}>
+                  <Skeleton className="h-40 w-full rounded-t-lg" />
+                  <CardHeader>
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-4 w-1/4" />
+                  </CardHeader>
+                  <CardFooter className="flex justify-end gap-2">
+                    <Skeleton className="h-9 w-20" />
+                    <Skeleton className="h-9 w-20" />
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
         </div>
     )
   }
@@ -125,58 +134,49 @@ export function MenuTable() {
       <div className="flex justify-end">
         <Button onClick={handleAddNew}>Add New Meal</Button>
       </div>
-      <div className="rounded-md border mt-4">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Image</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Price (R)</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {meals.length > 0 ? meals.map((meal) => (
-              <TableRow key={meal.id}>
-                <TableCell>
-                  <Image src={getSafeImageUrl(meal.image)} alt={meal.name} width={40} height={40} className="rounded-md" data-ai-hint="meal food" />
-                </TableCell>
-                <TableCell>{meal.name}</TableCell>
-                <TableCell>{meal.price?.toFixed(2) ?? '0.00'}</TableCell>
-                <TableCell className="text-right">
-                  <div className="inline-flex rounded-md shadow-sm">
-                    <Button variant="outline" size="sm" className="rounded-r-none" onClick={() => handleEdit(meal)}>Edit</Button>
-                     <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                          <Button variant="destructive" size="sm" className="rounded-l-none">Delete</Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                          <AlertDialogHeader>
-                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                              This action cannot be undone. This will permanently delete this meal from the menu.
-                          </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDeleteMeal(meal.id)}>
-                              Continue
-                          </AlertDialogAction>
-                          </AlertDialogFooter>
-                      </AlertDialogContent>
-                      </AlertDialog>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )) : (
-                <TableRow>
-                    <TableCell colSpan={4} className="h-24 text-center">
-                        No meals found. Add a meal to get started.
-                    </TableCell>
-                </TableRow>
-            )}
-          </TableBody>
-        </Table>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
+        {meals.length > 0 ? meals.map((meal) => (
+          <Card key={meal.id} className="flex flex-col">
+            <div className="relative h-40 w-full">
+              <Image src={getSafeImageUrl(meal.image)} alt={meal.name} layout="fill" objectFit="cover" className="rounded-t-lg" data-ai-hint="meal food" />
+            </div>
+            <CardHeader className="flex-grow">
+              <CardTitle className="text-lg">{meal.name}</CardTitle>
+              <Badge variant="secondary" className="w-fit">R{meal.price?.toFixed(2) ?? '0.00'}</Badge>
+            </CardHeader>
+            <CardFooter className="flex justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={() => handleEdit(meal)}>Edit</Button>
+                <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="sm">Delete</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete this meal from the menu.
+                    </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => handleDeleteMeal(meal.id)}>
+                        Continue
+                    </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+                </AlertDialog>
+            </CardFooter>
+          </Card>
+        )) : (
+            <div className="col-span-full text-center py-12">
+                <Card>
+                    <CardContent className="p-6">
+                        <h3 className="text-xl font-semibold">No meals found</h3>
+                        <p className="text-muted-foreground mt-2">Add a meal to get started.</p>
+                    </CardContent>
+                </Card>
+            </div>
+        )}
       </div>
       <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
