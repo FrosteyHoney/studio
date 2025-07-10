@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -15,7 +16,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
+import { doc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
@@ -46,10 +48,26 @@ export function SignUpForm() {
     setIsLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      const user = userCredential.user;
       
-      if (userCredential.user) {
-        await updateProfile(userCredential.user, {
-            displayName: `${values.name} ${values.surname}`
+      if (user) {
+        const displayName = `${values.name} ${values.surname}`;
+        await updateProfile(user, {
+            displayName: displayName
+        });
+
+        // Create a new user document in Firestore
+        await setDoc(doc(db, "users", user.uid), {
+            id: user.uid,
+            name: displayName,
+            email: user.email,
+            status: "Active",
+            joined: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
+            height: 0,
+            weight: 0,
+            bmi: 0,
+            bodyFat: 0,
+            muscleMass: 0
         });
       }
 

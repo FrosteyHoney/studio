@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -15,6 +16,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Dispatch, SetStateAction } from "react";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 const formSchema = z.object({
   height: z.coerce.number().min(0, { message: "Height must be a positive number." }),
@@ -42,14 +45,31 @@ export function UserEditForm({ setOpen, initialData }: UserEditFormProps) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    toast({
-      title: "User Updated",
-      description: `The details for ${initialData?.name} have been successfully saved.`,
-    });
-    // Here you would typically call an API to save the data
-    console.log(values);
-    setOpen(false);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!initialData?.id) {
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "No user ID found to update.",
+        });
+        return;
+    }
+    
+    try {
+        const userRef = doc(db, "users", initialData.id);
+        await updateDoc(userRef, values);
+        toast({
+            title: "User Updated",
+            description: `The details for ${initialData?.name} have been successfully saved.`,
+        });
+        setOpen(false);
+    } catch (error) {
+        toast({
+            variant: "destructive",
+            title: "Update Failed",
+            description: "Could not save user details to the database.",
+        });
+    }
   }
 
   return (

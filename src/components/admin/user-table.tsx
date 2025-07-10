@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -33,73 +33,88 @@ import {
 } from "@/components/ui/alert-dialog";
 import { UserEditForm } from "./user-edit-form";
 import { useToast } from "@/hooks/use-toast";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { Skeleton } from "../ui/skeleton";
 
-const initialUsers = [
-  { 
-    id: "1", 
-    name: "John Doe", 
-    email: "john@example.com", 
-    status: "Active", 
-    joined: "2023-10-01",
-    height: 180,
-    weight: 75,
-    bmi: 23.1,
-    bodyFat: 15,
-    muscleMass: 63
-  },
-  { 
-    id: "2", 
-    name: "Jane Smith", 
-    email: "jane@example.com", 
-    status: "Active", 
-    joined: "2023-10-05",
-    height: 165,
-    weight: 58,
-    bmi: 21.3,
-    bodyFat: 22,
-    muscleMass: 45
-  },
-  { 
-    id: "3", 
-    name: "Peter Jones", 
-    email: "peter@example.com", 
-    status: "Inactive", 
-    joined: "2023-09-15",
-    height: 175,
-    weight: 85,
-    bmi: 27.8,
-    bodyFat: 20,
-    muscleMass: 70
-  },
-];
-
-type User = typeof initialUsers[0];
+interface User { 
+  id: string; 
+  name: string; 
+  email: string; 
+  status: string; 
+  joined: string;
+  height: number;
+  weight: number;
+  bmi: number;
+  bodyFat: number;
+  muscleMass: number;
+}
 
 export function UserTable() {
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const { toast } = useToast();
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    const querySnapshot = await getDocs(collection(db, "users"));
+    const usersData = querySnapshot.docs.map(doc => ({ ...doc.data() } as User));
+    setUsers(usersData);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    if(!isDialogOpen) {
+        fetchUsers();
+    }
+  }, [isDialogOpen]);
 
   const handleEdit = (user: User) => {
     setEditingUser(user);
     setDialogOpen(true);
   };
   
-  const handleDeleteUser = (userId: string) => {
-    // Here you would typically call an API to delete the user from your database
-    setUsers(users.filter(user => user.id !== userId));
-    toast({
-      title: "User Deleted",
-      description: "The user has been successfully removed.",
-    });
+  const handleDeleteUser = async (userId: string) => {
+    try {
+      // Here you would typically call an API to delete the user from your database
+      // For now, we will delete from firestore
+      await deleteDoc(doc(db, "users", userId));
+      setUsers(users.filter(user => user.id !== userId));
+      toast({
+        title: "User Deleted",
+        description: "The user has been successfully removed.",
+      });
+    } catch(error) {
+       toast({
+        variant: "destructive",
+        title: "Error Deleting User",
+        description: "There was a problem deleting the user.",
+      });
+    }
   };
 
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (loading) {
+    return (
+        <div className="space-y-4">
+            <div className="flex justify-between">
+                <Skeleton className="h-10 w-64" />
+            </div>
+            <Skeleton className="h-[400px] w-full" />
+        </div>
+    )
+  }
 
   return (
     <>
