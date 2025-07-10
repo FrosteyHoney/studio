@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -58,23 +58,27 @@ export function UserTable() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const { toast } = useToast();
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     setLoading(true);
-    const querySnapshot = await getDocs(collection(db, "users"));
-    const usersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
-    setUsers(usersData);
-    setLoading(false);
-  };
+    try {
+      const querySnapshot = await getDocs(collection(db, "users"));
+      const usersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
+      setUsers(usersData);
+    } catch (error) {
+      console.error("Error fetching users: ", error);
+      toast({
+        variant: "destructive",
+        title: "Error fetching users",
+        description: "Could not retrieve user data from the database.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [toast]);
 
   useEffect(() => {
     fetchUsers();
-  }, []);
-
-  useEffect(() => {
-    if(!isDialogOpen) {
-        fetchUsers();
-    }
-  }, [isDialogOpen]);
+  }, [fetchUsers]);
 
   const handleEdit = (user: User) => {
     setEditingUser(user);
@@ -84,7 +88,7 @@ export function UserTable() {
   const handleDeleteUser = async (userId: string) => {
     try {
       await deleteDoc(doc(db, "users", userId));
-      setUsers(users.filter(user => user.id !== userId));
+      setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
       toast({
         title: "User Deleted",
         description: "The user has been successfully removed.",
@@ -99,8 +103,8 @@ export function UserTable() {
   };
 
   const filteredUsers = users.filter(user => 
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
@@ -124,64 +128,72 @@ export function UserTable() {
           className="max-w-sm"
         />
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Date Joined</TableHead>
-            <TableHead>Height (cm)</TableHead>
-            <TableHead>Weight (kg)</TableHead>
-            <TableHead>BMI</TableHead>
-            <TableHead>Body Fat (%)</TableHead>
-            <TableHead>Muscle Mass (kg)</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredUsers.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell>{user.name}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>
-                <Badge variant={user.status === 'Active' ? 'default' : 'secondary'}>{user.status}</Badge>
-              </TableCell>
-              <TableCell>{user.joined}</TableCell>
-              <TableCell>{user.height}</TableCell>
-              <TableCell>{user.weight}</TableCell>
-              <TableCell>{user.bmi}</TableCell>
-              <TableCell>{user.bodyFat}</TableCell>
-              <TableCell>{user.muscleMass}</TableCell>
-              <TableCell className="text-right">
-                <div className="inline-flex rounded-md shadow-sm">
-                    <Button variant="outline" size="lg" className="rounded-r-none px-3" onClick={() => handleEdit(user)}>Edit</Button>
-                    <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button variant="destructive" size="sm" className="rounded-l-none">Delete</Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete the user account
-                            and remove their data from our servers.
-                        </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDeleteUser(user.id)}>
-                            Continue
-                        </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                    </AlertDialog>
-                </div>
-              </TableCell>
+      <div className="rounded-md border mt-4">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Date Joined</TableHead>
+              <TableHead>Height (cm)</TableHead>
+              <TableHead>Weight (kg)</TableHead>
+              <TableHead>BMI</TableHead>
+              <TableHead>Body Fat (%)</TableHead>
+              <TableHead>Muscle Mass (kg)</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {filteredUsers.length > 0 ? filteredUsers.map((user) => (
+              <TableRow key={user.id}>
+                <TableCell>{user.name}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>
+                  <Badge variant={user.status === 'Active' ? 'default' : 'secondary'}>{user.status}</Badge>
+                </TableCell>
+                <TableCell>{user.joined}</TableCell>
+                <TableCell>{user.height}</TableCell>
+                <TableCell>{user.weight}</TableCell>
+                <TableCell>{user.bmi}</TableCell>
+                <TableCell>{user.bodyFat}</TableCell>
+                <TableCell>{user.muscleMass}</TableCell>
+                <TableCell className="text-right">
+                  <div className="inline-flex rounded-md shadow-sm">
+                      <Button variant="outline" size="lg" className="rounded-r-none px-3" onClick={() => handleEdit(user)}>Edit</Button>
+                      <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm" className="rounded-l-none">Delete</Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                          <AlertDialogHeader>
+                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                              This action cannot be undone. This will permanently delete the user account
+                              and remove their data from our servers.
+                          </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDeleteUser(user.id)}>
+                              Continue
+                          </AlertDialogAction>
+                          </AlertDialogFooter>
+                      </AlertDialogContent>
+                      </AlertDialog>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )) : (
+              <TableRow>
+                <TableCell colSpan={10} className="h-24 text-center">
+                  No users found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
       <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -191,6 +203,7 @@ export function UserTable() {
           <UserEditForm 
             setOpen={setDialogOpen} 
             initialData={editingUser} 
+            onUserUpdated={fetchUsers}
           />
         </DialogContent>
       </Dialog>

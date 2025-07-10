@@ -30,9 +30,10 @@ const formSchema = z.object({
 interface UserEditFormProps {
     setOpen: Dispatch<SetStateAction<boolean>>;
     initialData?: any;
+    onUserUpdated: () => void;
 }
 
-export function UserEditForm({ setOpen, initialData }: UserEditFormProps) {
+export function UserEditForm({ setOpen, initialData, onUserUpdated }: UserEditFormProps) {
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -62,6 +63,7 @@ export function UserEditForm({ setOpen, initialData }: UserEditFormProps) {
             title: "User Updated",
             description: `The details for ${initialData?.name} have been successfully saved.`,
         });
+        onUserUpdated(); // Call the refetch function
         setOpen(false);
     } catch (error) {
         toast({
