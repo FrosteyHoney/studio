@@ -192,7 +192,10 @@ export default function MealPrepPage() {
         const key = `${day}_${mealType}`;
         const mealName = userPlan[key];
         if (mealName && mealsByName[mealName]) {
-            totalCalories += mealsByName[mealName].calories;
+            const calories = mealsByName[mealName].calories;
+            if (typeof calories === 'number' && !isNaN(calories)) {
+                totalCalories += calories;
+            }
         }
     });
     return totalCalories;
