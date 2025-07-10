@@ -10,28 +10,36 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminDashboardPage() {
     const [userCount, setUserCount] = useState<number | null>(null);
+    const [bookingCount, setBookingCount] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchUserCount = async () => {
+        const fetchStats = async () => {
             try {
-                const querySnapshot = await getDocs(collection(db, "users"));
-                setUserCount(querySnapshot.size);
+                const usersSnapshot = await getDocs(collection(db, "users"));
+                setUserCount(usersSnapshot.size);
+
+                // For now, we assume a 'bookings' collection. 
+                // The count will be 0 until booking functionality is added.
+                const bookingsSnapshot = await getDocs(collection(db, "bookings"));
+                setBookingCount(bookingsSnapshot.size);
+
             } catch (error) {
-                console.error("Error fetching user count: ", error);
+                console.error("Error fetching stats: ", error);
                 setUserCount(0);
+                setBookingCount(0);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchUserCount();
+        fetchStats();
     }, []);
 
     const summary = [
         { title: "Total Users", value: userCount, icon: Users, id: "users" },
-        { title: "Active Bookings", value: 5, icon: CalendarCheck },
-        { title: "Revenue (This Month)", value: "R 79,500", icon: DollarSign },
+        { title: "Active Bookings", value: bookingCount, icon: CalendarCheck, id: "bookings" },
+        { title: "Revenue (This Month)", value: "R 0.00", icon: DollarSign },
     ];
 
     const recentActivity = [
@@ -52,7 +60,7 @@ export default function AdminDashboardPage() {
                             <item.icon className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            {loading && item.id === 'users' ? (
+                            {loading ? (
                                 <Skeleton className="h-8 w-1/2" />
                             ) : (
                                 <div className="text-2xl font-bold">{item.value}</div>
