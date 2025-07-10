@@ -159,7 +159,7 @@ export function MenuTable() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
                 </AlertDialog>
-            </Footer>
+            </CardFooter>
           </Card>
         )) : (
             <div className="col-span-full text-center py-12">
