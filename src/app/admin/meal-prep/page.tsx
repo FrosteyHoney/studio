@@ -151,13 +151,20 @@ export default function MealPrepPage() {
       setMealPlan(prev => {
         const newPlan = { ...prev[currentUserForGeneration.id] };
         daysOfWeek.forEach(day => {
-          mealTypes.forEach(mealType => {
-            const planKey = `${day}_${mealType}`;
-            const generatedMeal = result.plan[day.toLowerCase() as keyof typeof result.plan]?.[mealType.toLowerCase() as keyof typeof result.plan.monday];
-            if(generatedMeal && meals.find(m => m.name === generatedMeal)) {
-              newPlan[planKey] = generatedMeal;
-            }
-          });
+          const dayKey = day.toLowerCase() as keyof typeof result.plan;
+          const dailyPlan = result.plan[dayKey];
+
+          if (dailyPlan) { // Check if the daily plan exists
+            mealTypes.forEach(mealType => {
+              const planKey = `${day}_${mealType}`;
+              const mealTypeKey = mealType.toLowerCase() as keyof typeof dailyPlan;
+              const generatedMeal = dailyPlan[mealTypeKey];
+
+              if(generatedMeal && meals.find(m => m.name === generatedMeal)) {
+                newPlan[planKey] = generatedMeal;
+              }
+            });
+          }
         });
         return { ...prev, [currentUserForGeneration.id]: newPlan };
       });
