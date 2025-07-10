@@ -45,6 +45,21 @@ export function MealPlan() {
         });
     }
 
+    const getSafeImageUrl = (url: string | undefined) => {
+      const defaultImage = "https://placehold.co/80x80.png";
+      if (!url) {
+        return defaultImage;
+      }
+      try {
+        // Use the URL constructor to check if it's a valid URL format.
+        // This will throw an error for local file paths like 'file:///...'
+        new URL(url);
+        return url;
+      } catch (error) {
+        return defaultImage;
+      }
+    };
+
     return (
         <div className="space-y-4">
             <p className="text-sm text-muted-foreground">Select a day and see available meals for the upcoming week.</p>
@@ -68,7 +83,7 @@ export function MealPlan() {
                     {!loading && meals.map((meal) => (
                         <Card key={meal.id} className="flex items-center">
                             <CardHeader className="p-2">
-                            <Image src={meal.image || "https://placehold.co/80x80.png"} alt={meal.name} width={80} height={80} className="rounded-md" data-ai-hint={meal.name.split(' ').slice(0,2).join(' ')} />
+                            <Image src={getSafeImageUrl(meal.image)} alt={meal.name} width={80} height={80} className="rounded-md" data-ai-hint={meal.name.split(' ').slice(0,2).join(' ')} />
                             </CardHeader>
                             <CardContent className="p-4 flex-1">
                                 <h4 className="font-semibold">{meal.name}</h4>
