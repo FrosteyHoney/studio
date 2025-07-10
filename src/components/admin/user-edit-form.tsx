@@ -27,10 +27,18 @@ const formSchema = z.object({
   muscleMass: z.coerce.number().min(0, { message: "Muscle Mass must be a positive number." }),
 });
 
+export interface StatChange {
+    height: number;
+    weight: number;
+    bmi: number;
+    bodyFat: number;
+    muscleMass: number;
+}
+
 interface UserEditFormProps {
     setOpen: Dispatch<SetStateAction<boolean>>;
     initialData?: any;
-    onUserUpdated: () => void;
+    onUserUpdated: (userId: string, changes: StatChange) => void;
 }
 
 export function UserEditForm({ setOpen, initialData, onUserUpdated }: UserEditFormProps) {
@@ -59,11 +67,20 @@ export function UserEditForm({ setOpen, initialData, onUserUpdated }: UserEditFo
     try {
         const userRef = doc(db, "users", initialData.id);
         await updateDoc(userRef, values);
+
+        const changes: StatChange = {
+            height: values.height - initialData.height,
+            weight: values.weight - initialData.weight,
+            bmi: values.bmi - initialData.bmi,
+            bodyFat: values.bodyFat - initialData.bodyFat,
+            muscleMass: values.muscleMass - initialData.muscleMass,
+        };
+
         toast({
             title: "User Updated",
             description: `The details for ${initialData?.name} have been successfully saved.`,
         });
-        onUserUpdated(); // Call the refetch function
+        onUserUpdated(initialData.id, changes);
         setOpen(false);
     } catch (error) {
         toast({

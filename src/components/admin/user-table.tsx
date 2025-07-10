@@ -31,11 +31,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { UserEditForm } from "./user-edit-form";
+import { UserEditForm, type StatChange } from "./user-edit-form";
 import { useToast } from "@/hooks/use-toast";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Skeleton } from "../ui/skeleton";
+import { ArrowDown, ArrowUp } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface User { 
   id: string; 
@@ -50,12 +52,17 @@ interface User {
   muscleMass: number;
 }
 
+interface StatChanges {
+  [userId: string]: StatChange;
+}
+
 export function UserTable() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [statChanges, setStatChanges] = useState<StatChanges>({});
   const { toast } = useToast();
 
   const fetchUsers = useCallback(async () => {
@@ -80,6 +87,19 @@ export function UserTable() {
     fetchUsers();
   }, [fetchUsers]);
 
+  const handleUserUpdated = (userId: string, changes: StatChange) => {
+    fetchUsers();
+    setStatChanges(prev => ({ ...prev, [userId]: changes }));
+    // Remove the change indicator after a delay
+    setTimeout(() => {
+        setStatChanges(prev => {
+            const newChanges = { ...prev };
+            delete newChanges[userId];
+            return newChanges;
+        });
+    }, 5000); // 5 seconds
+  };
+
   const handleEdit = (user: User) => {
     setEditingUser(user);
     setDialogOpen(true);
@@ -100,6 +120,24 @@ export function UserTable() {
         description: "There was a problem deleting the user.",
       });
     }
+  };
+
+  const StatChangeIndicator = ({ change, good }: { change: number; good: 'up' | 'down' }) => {
+    if (change === 0 || isNaN(change)) return null;
+
+    const isGood = (good === 'up' && change > 0) || (good === 'down' && change < 0);
+    const isBad = (good === 'up' && change < 0) || (good === 'down' && change > 0);
+
+    return (
+        <span className={cn(
+            "ml-2 inline-flex items-center gap-1 text-xs transition-opacity duration-500",
+            isGood && "text-green-500",
+            isBad && "text-red-500",
+        )}>
+            {change > 0 ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
+            {Math.abs(change).toFixed(1)}
+        </span>
+    );
   };
 
   const filteredUsers = users.filter(user => 
@@ -146,18 +184,33 @@ export function UserTable() {
           </TableHeader>
           <TableBody>
             {filteredUsers.length > 0 ? filteredUsers.map((user) => (
-              <TableRow key={user.id}>
+              <TableRow key={user.id} className={cn(statChanges[user.id] && "bg-muted/50")}>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
                   <Badge variant={user.status === 'Active' ? 'default' : 'secondary'}>{user.status}</Badge>
                 </TableCell>
                 <TableCell>{user.joined}</TableCell>
-                <TableCell>{user.height}</TableCell>
-                <TableCell>{user.weight}</TableCell>
-                <TableCell>{user.bmi}</TableCell>
-                <TableCell>{user.bodyFat}</TableCell>
-                <TableCell>{user.muscleMass}</TableCell>
+                <TableCell className="flex items-center">
+                    {user.height}
+                    {statChanges[user.id] && <StatChangeIndicator change={statChanges[user.id].height} good="up" />}
+                </TableCell>
+                <TableCell>
+                    {user.weight}
+                    {statChanges[user.id] && <StatChangeIndicator change={statChanges[user.id].weight} good="down" />}
+                </TableCell>
+                <TableCell>
+                    {user.bmi}
+                    {statChanges[user.id] && <StatChangeIndicator change={statChanges[user.id].bmi} good="down" />}
+                </TableCell>
+                <TableCell>
+                    {user.bodyFat}
+                    {statChanges[user.id] && <StatChangeIndicator change={statChanges[user.id].bodyFat} good="down" />}
+                </TableCell>
+                <TableCell>
+                    {user.muscleMass}
+                    {statChanges[user.id] && <StatChangeIndicator change={statChanges[user.id].muscleMass} good="up" />}
+                </TableCell>
                 <TableCell className="text-right">
                   <div className="inline-flex rounded-md shadow-sm">
                       <Button variant="outline" size="sm" className="rounded-r-none" onClick={() => handleEdit(user)}>Edit</Button>
@@ -203,7 +256,7 @@ export function UserTable() {
           <UserEditForm 
             setOpen={setDialogOpen} 
             initialData={editingUser} 
-            onUserUpdated={fetchUsers}
+            onUserUpdated={handleUserUpdated}
           />
         </DialogContent>
       </Dialog>
