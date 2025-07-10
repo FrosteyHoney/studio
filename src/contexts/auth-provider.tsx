@@ -2,8 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
-import { Skeleton } from '@/components/ui/skeleton';
+import { getAuth } from "firebase/auth";
+import { app } from '@/lib/firebase'; // Import the initialized app
 
 interface AuthContextType {
   user: User | null;
@@ -20,10 +20,10 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  // In a real app, this would be a check against custom claims or a database role.
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    const auth = getAuth(app); // Get auth instance from the initialized app
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       // Mock admin check for demonstration.

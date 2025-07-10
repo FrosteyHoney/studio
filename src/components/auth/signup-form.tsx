@@ -65,7 +65,7 @@ export function SignUpForm() {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: `Firebase: Error (${error.code})`,
+        description: `Firebase: Error (${error.code || error.message})`,
       });
     } finally {
       setIsLoading(false);
