@@ -118,14 +118,14 @@ export function MenuTable() {
 
         await batch.commit();
         toast({
-            title: "Menu Seeded!",
+            title: "Menu Created!",
             description: `${healthyMealsSeedData.length} healthy meals have been added to the menu.`,
         });
         fetchMeals(); // Refresh the list
     } catch (error) {
         toast({
             variant: "destructive",
-            title: "Error Seeding Menu",
+            title: "Error Creating Menu",
             description: "There was a problem adding the meals to the database.",
         });
     } finally {
@@ -177,7 +177,7 @@ export function MenuTable() {
       <div className="flex justify-end gap-2">
         <Button onClick={handleSeedMenu} variant="outline" disabled={isSeeding}>
             {isSeeding ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            Seed Healthy Menu
+            Create Mock Menu
         </Button>
         <Button onClick={handleAddNew}>Add New Meal</Button>
       </div>
@@ -221,8 +221,8 @@ export function MenuTable() {
             <div className="col-span-full text-center py-12">
                 <Card>
                     <CardContent className="p-6">
-                        <h3 className="text-xl font-semibold">No meals found</h3>
-                        <p className="text-muted-foreground mt-2">Get started by adding a meal or seeding a healthy menu.</p>
+                        <h3 className="text-xl font-semibold">Your Menu is Empty</h3>
+                        <p className="text-muted-foreground mt-2">Get started by adding a meal manually, or create a mock menu.</p>
                     </CardContent>
                 </Card>
             </div>
