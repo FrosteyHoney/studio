@@ -56,13 +56,12 @@ export function SignUpForm() {
             displayName: displayName
         });
 
-        // Create a new user document in Firestore
         await setDoc(doc(db, "users", user.uid), {
             id: user.uid,
             name: displayName,
             email: user.email,
             status: "Active",
-            joined: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
+            joined: new Date().toISOString().split('T')[0], 
             height: 0,
             weight: 0,
             bmi: 0,
@@ -93,7 +92,7 @@ export function SignUpForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-6">
         <div className="grid grid-cols-2 gap-4">
             <FormField
             control={form.control}
@@ -148,10 +147,13 @@ export function SignUpForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button type="submit" className="w-full !mt-6" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Sign Up
         </Button>
+         <div className="text-center text-sm text-muted-foreground pt-4">
+            Already have an account? <Button variant="link" className="p-0 h-auto text-primary" type="button">Sign In</Button>
+        </div>
       </form>
     </Form>
   );
