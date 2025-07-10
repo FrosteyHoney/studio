@@ -91,7 +91,7 @@ export function MenuTable() {
     }
   };
 
-  const getValidImageUrl = (url: string | undefined) => {
+  const getValidImageUrl = (url: string | undefined | null): string => {
     const defaultImage = "https://placehold.co/40x40.png";
     if (!url || !url.startsWith("https://placehold.co/")) {
         return defaultImage;
