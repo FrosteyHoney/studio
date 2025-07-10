@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Dumbbell, LogOut, User as UserIcon, ShieldCheck, Settings, Menu } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
@@ -43,6 +43,9 @@ export function Header() {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="pr-0">
+        <SheetHeader>
+            <SheetTitle className="sr-only">Mobile Navigation Menu</SheetTitle>
+        </SheetHeader>
         <Link
             href="/"
             className="flex items-center gap-2"
@@ -52,7 +55,7 @@ export function Header() {
           <span className="font-bold">Committed Bodies Hub</span>
         </Link>
         <div className="my-4 h-[calc(100vh-8rem)]">
-          <div className="flex flex-col space-y-3">
+          <div className="flex flex-col space-y-3 pl-4">
              {user && (
               <>
                 <Link
