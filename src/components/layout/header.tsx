@@ -24,7 +24,7 @@ export function Header() {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      router.push('/login');
+      router.push('/');
     } catch (error) {
       console.error('Error signing out: ', error);
     }
@@ -97,16 +97,7 @@ export function Header() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : (
-            <nav className="flex items-center gap-2">
-              <Button asChild variant="ghost">
-                <Link href="/login">Login</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/signup">Sign Up</Link>
-              </Button>
-            </nav>
-          )}
+          ) : null}
         </div>
       </div>
     </header>
