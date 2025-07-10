@@ -27,7 +27,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 
 export function MenuTable() {
@@ -36,25 +36,6 @@ export function MenuTable() {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [editingMeal, setEditingMeal] = useState<MenuItem | null>(null);
   const { toast } = useToast();
-
-  const getSafeImageUrl = (url: string | undefined) => {
-    const defaultImage = "https://placehold.co/400x300.png";
-    if (!url) {
-      return defaultImage;
-    }
-    try {
-      const parsedUrl = new URL(url);
-      // Only allow placehold.co images
-      if (parsedUrl.hostname === 'placehold.co') {
-        return url;
-      }
-    } catch (error) {
-      // Invalid URL format
-      return defaultImage;
-    }
-    // Hostname not allowed
-    return defaultImage;
-  };
 
   const fetchMeals = useCallback(async () => {
     setLoading(true);
@@ -101,6 +82,19 @@ export function MenuTable() {
         title: "Error Deleting Meal",
         description: "There was a problem deleting the meal.",
       });
+    }
+  };
+
+  const getSafeImageUrl = (url: string | undefined) => {
+    const defaultImage = "https://placehold.co/400x300.png";
+    if (!url || (!url.startsWith('http://') && !url.startsWith('https://'))) {
+      return defaultImage;
+    }
+    try {
+      new URL(url);
+      return url;
+    } catch (error) {
+      return defaultImage;
     }
   };
 
@@ -165,7 +159,7 @@ export function MenuTable() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
                 </AlertDialog>
-            </CardFooter>
+            </Footer>
           </Card>
         )) : (
             <div className="col-span-full text-center py-12">

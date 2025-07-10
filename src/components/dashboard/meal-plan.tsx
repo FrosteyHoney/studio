@@ -47,12 +47,11 @@ export function MealPlan() {
 
     const getSafeImageUrl = (url: string | undefined) => {
       const defaultImage = "https://placehold.co/80x80.png";
-      if (!url) {
+      if (!url || (!url.startsWith('http://') && !url.startsWith('https://'))) {
         return defaultImage;
       }
       try {
-        // Use the URL constructor to check if it's a valid URL format.
-        // This will throw an error for local file paths like 'file:///...'
+        // This will still throw for invalid formats but the initial check handles most cases.
         new URL(url);
         return url;
       } catch (error) {
