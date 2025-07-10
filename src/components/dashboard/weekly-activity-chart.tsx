@@ -1,6 +1,7 @@
+
 "use client"
 
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { Line, LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from "recharts"
 
 const data = [
   { name: "Mon", total: Math.floor(Math.random() * 60) + 30 },
@@ -15,7 +16,9 @@ const data = [
 export function WeeklyActivityChart() {
   return (
     <ResponsiveContainer width="100%" height={350}>
-      <BarChart data={data}>
+      <LineChart data={data}>
+        <Tooltip />
+        <Legend />
         <XAxis
           dataKey="name"
           stroke="#888888"
@@ -30,12 +33,13 @@ export function WeeklyActivityChart() {
           axisLine={false}
           tickFormatter={(value) => `${value}m`}
         />
-        <Bar
+        <Line
+          type="monotone"
           dataKey="total"
-          fill="hsl(var(--primary))"
-          radius={[4, 4, 0, 0]}
+          stroke="hsl(var(--primary))"
+          
         />
-      </BarChart>
+      </LineChart>
     </ResponsiveContainer>
   )
 }

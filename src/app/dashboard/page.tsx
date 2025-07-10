@@ -1,7 +1,7 @@
 
 "use client";
 
-import { WeeklyActivityChart } from "@/components/dashboard/weekly-activity-chart";
+import { ProgressChart } from "@/components/dashboard/progress-chart";
 import { LogWorkout } from "@/components/dashboard/log-workout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserStatsCards } from "@/components/dashboard/user-stats-cards";
@@ -16,10 +16,10 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle>Weekly Activity</CardTitle>
+            <CardTitle>Progress Over Time</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            <WeeklyActivityChart />
+            <ProgressChart />
           </CardContent>
         </Card>
         <Card className="col-span-4 lg:col-span-3">

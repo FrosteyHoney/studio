@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Dispatch, SetStateAction } from "react";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, collection, addDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 const formSchema = z.object({
@@ -77,6 +77,13 @@ export function UserEditForm({ setOpen, initialData, onUserUpdated }: UserEditFo
         };
 
         await updateDoc(userRef, updateData);
+        
+        // Add to history subcollection
+        const historyRef = collection(db, "users", initialData.id, "statHistory");
+        await addDoc(historyRef, {
+            ...values,
+            date: new Date().toISOString(),
+        });
 
         const changes: StatChange = {
             height: values.height - initialData.height,
