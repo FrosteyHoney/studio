@@ -1,8 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dumbbell, Flame, Clock } from "lucide-react";
 
-export function StatsCards() {
-    const stats = [
+interface StatsCardsProps {
+    showCalories: boolean;
+}
+
+export function StatsCards({ showCalories }: StatsCardsProps) {
+    let stats = [
         {
             title: "Workouts this week",
             value: "4",
@@ -14,6 +18,7 @@ export function StatsCards() {
             value: "2,389",
             icon: Flame,
             change: "+120 from last week",
+            id: "calories"
         },
         {
             title: "Time Spent",
@@ -22,6 +27,11 @@ export function StatsCards() {
             change: "+45m from last week",
         },
     ];
+
+    if (!showCalories) {
+        stats = stats.filter(stat => stat.id !== "calories");
+    }
+
 
     return (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Dumbbell, LogOut, User as UserIcon, ShieldCheck } from 'lucide-react';
+import { Dumbbell, LogOut, User as UserIcon, ShieldCheck, Settings, Utensils } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
@@ -42,12 +42,20 @@ export function Header() {
           </Link>
           <nav className="flex items-center gap-6 text-sm">
             {user && (
-              <Link
-                href="/dashboard"
-                className="transition-colors hover:text-foreground/80 text-foreground/60"
-              >
-                Dashboard
-              </Link>
+              <>
+                <Link
+                  href="/dashboard"
+                  className="transition-colors hover:text-foreground/80 text-foreground/60"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/food"
+                  className="transition-colors hover:text-foreground/80 text-foreground/60"
+                >
+                  Food
+                </Link>
+              </>
             )}
              {isAdmin && (
                <Link
@@ -83,6 +91,10 @@ export function Header() {
                 <DropdownMenuItem onClick={() => router.push('/dashboard')}>
                   <UserIcon className="mr-2 h-4 w-4" />
                   <span>Dashboard</span>
+                </DropdownMenuItem>
+                 <DropdownMenuItem onClick={() => router.push('/dashboard/settings')}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
                 </DropdownMenuItem>
                 {isAdmin && (
                   <DropdownMenuItem onClick={() => router.push('/admin')}>
