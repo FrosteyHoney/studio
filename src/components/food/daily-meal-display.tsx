@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/auth-provider";
-import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, getDocs, DocumentData } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,9 +18,17 @@ interface Meal {
     image?: string;
 }
 
+interface TodaysMeals {
+    Breakfast?: Meal | null;
+    Lunch?: Meal | null;
+    Dinner?: Meal | null;
+}
+
+const mealTypes = ["Breakfast", "Lunch", "Dinner"];
+
 export function DailyMealDisplay() {
     const { user, loading: authLoading } = useAuth();
-    const [todaysMeal, setTodaysMeal] = useState<Meal | null>(null);
+    const [todaysMeals, setTodaysMeals] = useState<TodaysMeals>({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [currentDay, setCurrentDay] = useState("");
@@ -38,25 +46,38 @@ export function DailyMealDisplay() {
 
                 const planRef = doc(db, "mealPlans", user.uid);
                 const planSnap = await getDoc(planRef);
-
+                
                 if (planSnap.exists()) {
                     const planData = planSnap.data();
-                    const mealNameForToday = planData[dayOfWeek];
-
-                    if (mealNameForToday) {
-                        const menuRef = collection(db, "menu");
-                        const q = query(menuRef, where("name", "==", mealNameForToday));
-                        const querySnapshot = await getDocs(q);
-
-                        if (!querySnapshot.empty) {
-                            const mealDoc = querySnapshot.docs[0];
-                            setTodaysMeal({ id: mealDoc.id, ...mealDoc.data() } as Meal);
-                        } else {
-                            // Meal name in plan but not found in menu
-                            setError(`Your scheduled meal "${mealNameForToday}" could not be found on the menu.`);
+                    const mealNamesForToday: Record<string, string> = {};
+                    
+                    mealTypes.forEach(mealType => {
+                        const key = `${dayOfWeek}_${mealType}`;
+                        if (planData[key]) {
+                            mealNamesForToday[mealType] = planData[key];
                         }
+                    });
+
+                    if (Object.keys(mealNamesForToday).length > 0) {
+                        const menuRef = collection(db, "menu");
+                        const mealNames = Object.values(mealNamesForToday);
+                        const q = query(menuRef, where("name", "in", mealNames));
+                        const querySnapshot = await getDocs(q);
+                        
+                        const fetchedMeals = querySnapshot.docs.reduce((acc, doc) => {
+                            const mealData = { id: doc.id, ...doc.data() } as Meal;
+                            acc[mealData.name] = mealData;
+                            return acc;
+                        }, {} as Record<string, Meal>);
+
+                        const dailyMeals: TodaysMeals = {};
+                        for (const mealType in mealNamesForToday) {
+                            const mealName = mealNamesForToday[mealType];
+                            dailyMeals[mealType as keyof TodaysMeals] = fetchedMeals[mealName] || null;
+                        }
+                        setTodaysMeals(dailyMeals);
+
                     }
-                    // If no meal for today, todaysMeal remains null, which is handled in the JSX
                 }
             } catch (e) {
                 console.error("Error fetching today's meal: ", e);
@@ -86,19 +107,20 @@ export function DailyMealDisplay() {
 
     if (loading || authLoading) {
         return (
-            <Card className="max-w-md">
-                <CardHeader>
-                    <Skeleton className="h-8 w-3/4" />
-                    <Skeleton className="h-4 w-1/2" />
-                </CardHeader>
-                <Skeleton className="h-48 w-full rounded-b-lg" />
-            </Card>
+            <div className="space-y-4">
+                 <Skeleton className="h-8 w-1/4" />
+                 <div className="grid md:grid-cols-3 gap-4">
+                    <Skeleton className="h-64 w-full" />
+                    <Skeleton className="h-64 w-full" />
+                    <Skeleton className="h-64 w-full" />
+                 </div>
+            </div>
         );
     }
     
     if (error) {
         return (
-             <Card className="max-w-md bg-destructive/10 border-destructive">
+             <Card className="bg-destructive/10 border-destructive">
                 <CardHeader>
                     <CardTitle>An Error Occurred</CardTitle>
                 </CardHeader>
@@ -109,12 +131,14 @@ export function DailyMealDisplay() {
         )
     }
 
-    if (!todaysMeal) {
+    const hasAnyMeal = Object.values(todaysMeals).some(meal => meal);
+
+    if (!hasAnyMeal) {
         return (
-            <Card className="max-w-md">
+            <Card>
                  <CardHeader>
                     <CardTitle>{currentDay}</CardTitle>
-                    <CardDescription>No meal scheduled for today.</CardDescription>
+                    <CardDescription>No meals scheduled for today.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <p>Enjoy your day! Check the meal prep schedule or contact an admin if you believe this is an error.</p>
@@ -124,28 +148,44 @@ export function DailyMealDisplay() {
     }
 
     return (
-        <Card className="max-w-md overflow-hidden">
-            <CardHeader>
-                <CardTitle>{todaysMeal.name}</CardTitle>
-                <CardDescription>Your scheduled meal for {currentDay}.</CardDescription>
-            </CardHeader>
-            <CardContent className="p-0">
-                <div className="relative h-48 w-full">
-                    <Image
-                        src={getSafeImageUrl(todaysMeal.image)}
-                        alt={todaysMeal.name}
-                        layout="fill"
-                        objectFit="cover"
-                        data-ai-hint="meal food"
-                    />
-                </div>
-                <div className="p-6">
-                    <p className="text-muted-foreground">{todaysMeal.description}</p>
-                </div>
-            </CardContent>
-             <CardFooter>
-                <p className="text-sm font-semibold">Price: R{todaysMeal.price.toFixed(2)}</p>
-             </CardFooter>
-        </Card>
+        <div className="space-y-6">
+            <h2 className="text-2xl font-bold tracking-tight">Meals for {currentDay}</h2>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {mealTypes.map(mealType => {
+                    const meal = todaysMeals[mealType as keyof TodaysMeals];
+                    return (
+                        <div key={mealType}>
+                             <h3 className="text-xl font-semibold mb-2">{mealType}</h3>
+                            {meal ? (
+                                <Card className="overflow-hidden">
+                                    <CardContent className="p-0">
+                                        <div className="relative h-48 w-full">
+                                            <Image
+                                                src={getSafeImageUrl(meal.image)}
+                                                alt={meal.name}
+                                                layout="fill"
+                                                objectFit="cover"
+                                                data-ai-hint="meal food"
+                                            />
+                                        </div>
+                                        <div className="p-4">
+                                            <CardTitle className="text-lg mb-2">{meal.name}</CardTitle>
+                                            <CardDescription>{meal.description}</CardDescription>
+                                        </div>
+                                    </CardContent>
+                                    <CardFooter>
+                                        <p className="text-sm font-semibold">Price: R{meal.price.toFixed(2)}</p>
+                                    </CardFooter>
+                                </Card>
+                            ) : (
+                                <Card className="flex items-center justify-center h-full min-h-[120px] bg-muted/50">
+                                    <p className="text-muted-foreground">No {mealType.toLowerCase()} scheduled.</p>
+                                </Card>
+                            )}
+                        </div>
+                    )
+                })}
+            </div>
+        </div>
     );
 }

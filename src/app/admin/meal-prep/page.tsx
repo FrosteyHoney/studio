@@ -11,6 +11,7 @@ import { db } from "@/lib/firebase";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { Label } from "@/components/ui/label";
 
 interface Meal {
     id: string;
@@ -23,6 +24,7 @@ interface User {
 }
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const mealTypes = ["Breakfast", "Lunch", "Dinner"];
 
 export default function MealPrepPage() {
   const [meals, setMeals] = useState<Meal[]>([]);
@@ -75,12 +77,13 @@ export default function MealPrepPage() {
     fetchData();
   }, [fetchData]);
 
-  const handlePlanChange = (userId: string, day: string, mealName: string) => {
+  const handlePlanChange = (userId: string, day: string, mealType: string, mealName: string) => {
+    const key = `${day}_${mealType}`;
     setMealPlan(prev => ({
       ...prev,
       [userId]: {
         ...prev[userId],
-        [day]: mealName === "none" ? "" : mealName,
+        [key]: mealName === "none" ? "" : mealName,
       }
     }));
   };
@@ -144,8 +147,8 @@ export default function MealPrepPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[150px]">Member</TableHead>
-                  {daysOfWeek.map(day => <TableHead key={day}>{day}</TableHead>)}
+                  <TableHead className="w-[150px] min-w-[150px]">Member</TableHead>
+                  {daysOfWeek.map(day => <TableHead key={day} className="min-w-[220px]">{day}</TableHead>)}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -154,20 +157,30 @@ export default function MealPrepPage() {
                     <TableCell className="font-medium">{user.name}</TableCell>
                     {daysOfWeek.map(day => (
                       <TableCell key={day}>
-                        <Select 
-                          value={mealPlan[user.id]?.[day] || "none"}
-                          onValueChange={(value) => handlePlanChange(user.id, day, value)}
-                        >
-                          <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Select a meal" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="none">None</SelectItem>
-                            {meals.map(meal => (
-                               <SelectItem key={meal.id} value={meal.name}>{meal.name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <div className="grid gap-2">
+                            {mealTypes.map(mealType => {
+                                const key = `${day}_${mealType}`;
+                                return (
+                                    <div key={key} className="grid w-full max-w-sm items-center gap-1.5">
+                                        <Label htmlFor={key} className="text-xs text-muted-foreground">{mealType}</Label>
+                                        <Select 
+                                            value={mealPlan[user.id]?.[key] || "none"}
+                                            onValueChange={(value) => handlePlanChange(user.id, day, mealType, value)}
+                                        >
+                                            <SelectTrigger id={key} className="w-[180px]">
+                                                <SelectValue placeholder="Select a meal" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="none">None</SelectItem>
+                                                {meals.map(meal => (
+                                                <SelectItem key={meal.id} value={meal.name}>{meal.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                )
+                            })}
+                        </div>
                       </TableCell>
                     ))}
                   </TableRow>
