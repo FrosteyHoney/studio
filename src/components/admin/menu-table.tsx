@@ -91,6 +91,14 @@ export function MenuTable() {
     }
   };
 
+  const getValidImageUrl = (url: string | undefined) => {
+    const defaultImage = "https://placehold.co/40x40.png";
+    if (!url || !url.startsWith("https://placehold.co/")) {
+        return defaultImage;
+    }
+    return url;
+  };
+
   if (loading) {
     return (
         <div className="space-y-4">
@@ -121,7 +129,7 @@ export function MenuTable() {
             {meals.length > 0 ? meals.map((meal) => (
               <TableRow key={meal.id}>
                 <TableCell>
-                  <Image src={meal.image || "https://placehold.co/40x40.png"} alt={meal.name} width={40} height={40} className="rounded-md" data-ai-hint="meal food" />
+                  <Image src={getValidImageUrl(meal.image)} alt={meal.name} width={40} height={40} className="rounded-md" data-ai-hint="meal food" />
                 </TableCell>
                 <TableCell>{meal.name}</TableCell>
                 <TableCell>{meal.price?.toFixed(2) ?? '0.00'}</TableCell>
@@ -137,7 +145,7 @@ export function MenuTable() {
                           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                           <AlertDialogDescription>
                               This action cannot be undone. This will permanently delete this meal from the menu.
-                          </AlertDialogDescription>
+                          </Description>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -174,4 +182,3 @@ export function MenuTable() {
     </>
   );
 }
-
