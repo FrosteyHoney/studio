@@ -191,7 +191,7 @@ export function UserTable() {
                   <Badge variant={user.status === 'Active' ? 'default' : 'secondary'}>{user.status}</Badge>
                 </TableCell>
                 <TableCell>{user.joined}</TableCell>
-                <TableCell className="flex items-center">
+                <TableCell>
                     {user.height}
                     {statChanges[user.id] && <StatChangeIndicator change={statChanges[user.id].height} good="up" />}
                 </TableCell>
