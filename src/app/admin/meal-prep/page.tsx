@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { format, startOfWeek, endOfWeek } from "date-fns";
 
 interface Meal {
     id: string;
@@ -112,6 +113,11 @@ export default function MealPrepPage() {
       setIsSaving(false);
     }
   };
+  
+  const today = new Date();
+  const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Monday
+  const weekEnd = endOfWeek(today, { weekStartsOn: 1 }); // Sunday
+  const weekRange = `${format(weekStart, 'MMMM d')} - ${format(weekEnd, 'MMMM d')}`;
 
   if (loading) {
     return (
@@ -141,6 +147,7 @@ export default function MealPrepPage() {
       <Card>
         <CardHeader>
           <CardTitle>Meal Schedule</CardTitle>
+          <CardDescription>{weekRange}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -163,6 +170,7 @@ export default function MealPrepPage() {
                                 return (
                                     <div key={key} className="grid w-full max-w-sm items-center gap-1.5">
                                         <Label htmlFor={key} className="text-xs text-muted-foreground">{mealType}</Label>
+
                                         <Select 
                                             value={mealPlan[user.id]?.[key] || "none"}
                                             onValueChange={(value) => handlePlanChange(user.id, day, mealType, value)}
