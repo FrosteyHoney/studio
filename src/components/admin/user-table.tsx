@@ -61,7 +61,7 @@ export function UserTable() {
   const fetchUsers = async () => {
     setLoading(true);
     const querySnapshot = await getDocs(collection(db, "users"));
-    const usersData = querySnapshot.docs.map(doc => ({ ...doc.data() } as User));
+    const usersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
     setUsers(usersData);
     setLoading(false);
   };
@@ -83,8 +83,6 @@ export function UserTable() {
   
   const handleDeleteUser = async (userId: string) => {
     try {
-      // Here you would typically call an API to delete the user from your database
-      // For now, we will delete from firestore
       await deleteDoc(doc(db, "users", userId));
       setUsers(users.filter(user => user.id !== userId));
       toast({
@@ -157,7 +155,7 @@ export function UserTable() {
               <TableCell>{user.muscleMass}</TableCell>
               <TableCell className="text-right">
                 <div className="inline-flex rounded-md shadow-sm">
-                    <Button variant="outline" size="sm" className="rounded-r-none px-3" onClick={() => handleEdit(user)}>Edit</Button>
+                    <Button variant="outline" size="lg" className="rounded-r-none px-3" onClick={() => handleEdit(user)}>Edit</Button>
                     <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button variant="destructive" size="sm" className="rounded-l-none">Delete</Button>
