@@ -27,7 +27,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Loader2 } from "lucide-react";
 
@@ -197,13 +197,17 @@ export function MenuTable() {
             <div className="relative h-40 w-full">
               <Image src={getSafeImageUrl(meal.image)} alt={meal.name} layout="fill" objectFit="cover" className="rounded-t-lg" data-ai-hint="meal food" />
             </div>
-            <CardHeader className="flex-grow">
+            <CardHeader className="pb-2">
               <CardTitle className="text-lg">{meal.name}</CardTitle>
               <div className="flex gap-2 pt-1">
-                <Badge variant="secondary" className="w-fit">R{meal.price?.toFixed(2) ?? '0.00'}</Badge>
-                <Badge variant="outline" className="w-fit">{meal.calories ?? 0} kcal</Badge>
+                <Badge variant="secondary">R{meal.price?.toFixed(2) ?? '0.00'}</Badge>
+                <Badge variant="outline">{meal.calories ?? 0} kcal</Badge>
               </div>
             </CardHeader>
+            <CardContent className="flex-grow pt-2">
+              <CardDescription className="line-clamp-2">{meal.description}</CardDescription>
+              <p className="text-xs text-muted-foreground mt-2 font-medium">Ingredients: <span className="font-normal">{meal.ingredients}</span></p>
+            </CardContent>
             <CardFooter className="flex justify-end gap-2">
               <Button variant="outline" size="sm" onClick={() => handleEdit(meal)}>Edit</Button>
                 <AlertDialog>
