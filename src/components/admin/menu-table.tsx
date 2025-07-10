@@ -136,7 +136,10 @@ export function MenuTable() {
             </div>
             <CardHeader className="flex-grow">
               <CardTitle className="text-lg">{meal.name}</CardTitle>
-              <Badge variant="secondary" className="w-fit">R{meal.price?.toFixed(2) ?? '0.00'}</Badge>
+              <div className="flex gap-2 pt-1">
+                <Badge variant="secondary" className="w-fit">R{meal.price?.toFixed(2) ?? '0.00'}</Badge>
+                <Badge variant="outline" className="w-fit">{meal.calories ?? 0} kcal</Badge>
+              </div>
             </CardHeader>
             <CardFooter className="flex justify-end gap-2">
               <Button variant="outline" size="sm" onClick={() => handleEdit(meal)}>Edit</Button>

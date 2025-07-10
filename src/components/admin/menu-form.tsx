@@ -23,6 +23,7 @@ import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
 const formSchema = z.object({
   name: z.string().min(3, { message: "Name must be at least 3 characters." }),
   price: z.coerce.number().min(0, { message: "Price must be a positive number." }),
+  calories: z.coerce.number().min(0, { message: "Calories must be a positive number." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
   ingredients: z.string().min(3, { message: "Ingredients must be at least 3 characters." }),
   image: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
@@ -43,6 +44,7 @@ export function MenuForm({ setOpen, initialData, onMealUpdated }: MenuFormProps)
     defaultValues: initialData || {
       name: "",
       price: 0,
+      calories: 0,
       description: "",
       ingredients: "",
       image: "",
@@ -94,19 +96,34 @@ export function MenuForm({ setOpen, initialData, onMealUpdated }: MenuFormProps)
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="price"
-          render={({ field }) => (
-            <FormItem>
-            <FormLabel>Price (R)</FormLabel>
-            <FormControl>
-                <Input type="number" step="0.01" placeholder="e.g., 120.00" {...field} />
-            </FormControl>
-            <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-2 gap-4">
+            <FormField
+            control={form.control}
+            name="price"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Price (R)</FormLabel>
+                <FormControl>
+                    <Input type="number" step="0.01" placeholder="e.g., 120.00" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="calories"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Calories</FormLabel>
+                <FormControl>
+                    <Input type="number" placeholder="e.g., 550" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        </div>
         <FormField
           control={form.control}
           name="description"

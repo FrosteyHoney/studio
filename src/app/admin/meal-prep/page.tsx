@@ -5,12 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { collection, getDocs, doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Flame, Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { format, startOfWeek, endOfWeek } from "date-fns";
@@ -18,6 +18,7 @@ import { format, startOfWeek, endOfWeek } from "date-fns";
 interface Meal {
     id: string;
     name: string;
+    calories: number;
 }
 
 interface User {
@@ -36,6 +37,13 @@ export default function MealPrepPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
+
+  const mealsByName = useMemo(() => {
+    return meals.reduce((acc, meal) => {
+        acc[meal.name] = meal;
+        return acc;
+    }, {} as Record<string, Meal>);
+  }, [meals]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -115,6 +123,19 @@ export default function MealPrepPage() {
       setIsSaving(false);
     }
   };
+
+  const calculateDailyCalories = (userId: string, day: string) => {
+    const userPlan = mealPlan[userId] || {};
+    let totalCalories = 0;
+    mealTypes.forEach(mealType => {
+        const key = `${day}_${mealType}`;
+        const mealName = userPlan[key];
+        if (mealName && mealsByName[mealName]) {
+            totalCalories += mealsByName[mealName].calories;
+        }
+    });
+    return totalCalories;
+  };
   
   const today = new Date();
   const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Monday
@@ -168,14 +189,14 @@ export default function MealPrepPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[150px] min-w-[150px]">Member</TableHead>
+                  <TableHead className="w-[150px] min-w-[150px] sticky left-0 bg-card z-10">Member</TableHead>
                   {daysOfWeek.map(day => <TableHead key={day} className="min-w-[220px]">{day}</TableHead>)}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredUsers.length > 0 ? filteredUsers.map((user) => (
                   <TableRow key={user.id}>
-                    <TableCell className="font-medium">{user.name}</TableCell>
+                    <TableCell className="font-medium sticky left-0 bg-card z-10">{user.name}</TableCell>
                     {daysOfWeek.map(day => (
                       <TableCell key={day}>
                         <div className="grid gap-2">
@@ -202,6 +223,11 @@ export default function MealPrepPage() {
                                     </div>
                                 )
                             })}
+                            <div className="mt-2 flex items-center gap-2 border-t pt-2">
+                                <Flame className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm font-semibold">{calculateDailyCalories(user.id, day)}</span>
+                                <span className="text-xs text-muted-foreground">kcal</span>
+                            </div>
                         </div>
                       </TableCell>
                     ))}
