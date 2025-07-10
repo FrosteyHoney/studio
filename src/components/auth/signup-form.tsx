@@ -67,7 +67,11 @@ export function SignUpForm() {
             weight: 0,
             bmi: 0,
             bodyFat: 0,
-            muscleMass: 0
+            muscleMass: 0,
+            prevWeight: 0,
+            prevBmi: 0,
+            prevBodyFat: 0,
+            prevMuscleMass: 0,
         });
       }
 

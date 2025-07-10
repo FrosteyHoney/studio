@@ -8,6 +8,7 @@ interface StatsCardsProps {
     showCalories: boolean;
 }
 
+// THIS COMPONENT IS NO LONGER IN USE AND WILL BE REMOVED IN A FUTURE CHANGE
 export function StatsCards({ showCalories }: StatsCardsProps) {
     let stats = [
         {

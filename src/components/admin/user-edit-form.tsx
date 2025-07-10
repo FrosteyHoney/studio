@@ -66,7 +66,17 @@ export function UserEditForm({ setOpen, initialData, onUserUpdated }: UserEditFo
     
     try {
         const userRef = doc(db, "users", initialData.id);
-        await updateDoc(userRef, values);
+        
+        // Prepare the update object with previous values
+        const updateData = {
+          ...values,
+          prevWeight: initialData.weight,
+          prevBmi: initialData.bmi,
+          prevBodyFat: initialData.bodyFat,
+          prevMuscleMass: initialData.muscleMass,
+        };
+
+        await updateDoc(userRef, updateData);
 
         const changes: StatChange = {
             height: values.height - initialData.height,
