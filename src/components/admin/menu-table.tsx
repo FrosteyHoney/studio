@@ -143,6 +143,14 @@ export function MenuTable() {
     }
   }
 
+  const getSafeImageUrl = (url?: string) => {
+    const placeholder = "https://placehold.co/400x300.png";
+    if (!url || (!url.startsWith('http://') && !url.startsWith('https://'))) {
+      return placeholder;
+    }
+    return url;
+  };
+
   if (loading) {
     return (
         <div className="space-y-4">
@@ -183,7 +191,7 @@ export function MenuTable() {
           <Card key={meal.id} className="flex flex-col">
             <div className="relative h-40 w-full">
               <Image 
-                src={meal.image || "https://placehold.co/400x300.png"} 
+                src={getSafeImageUrl(meal.image)} 
                 alt={meal.name} 
                 fill 
                 className="object-cover rounded-t-lg" 
