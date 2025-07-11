@@ -16,6 +16,7 @@ interface Meal {
     description: string;
     price: number;
     image?: string;
+    calories?: number;
 }
 
 interface TodaysMeals {
@@ -92,19 +93,6 @@ export function DailyMealDisplay() {
         }
     }, [user, authLoading]);
 
-    const getSafeImageUrl = (url: string | undefined) => {
-        const defaultImage = "https://placehold.co/400x300.png";
-        if (!url || (!url.startsWith('http://') && !url.startsWith('https://'))) {
-          return defaultImage;
-        }
-        try {
-          new URL(url);
-          return url;
-        } catch (error) {
-          return defaultImage;
-        }
-    };
-
     if (loading || authLoading) {
         return (
             <div className="space-y-4">
@@ -161,10 +149,10 @@ export function DailyMealDisplay() {
                                     <CardContent className="p-0">
                                         <div className="relative h-48 w-full">
                                             <Image
-                                                src={getSafeImageUrl(meal.image)}
+                                                src={meal.image || "https://placehold.co/400x300.png"}
                                                 alt={meal.name}
-                                                layout="fill"
-                                                objectFit="cover"
+                                                fill
+                                                className="object-cover"
                                                 data-ai-hint="meal food"
                                             />
                                         </div>
@@ -173,8 +161,9 @@ export function DailyMealDisplay() {
                                             <CardDescription>{meal.description}</CardDescription>
                                         </div>
                                     </CardContent>
-                                    <CardFooter>
-                                        <p className="text-sm font-semibold">Price: R{meal.price.toFixed(2)}</p>
+                                    <CardFooter className="flex justify-between items-center">
+                                        <p className="text-sm font-semibold">R{meal.price.toFixed(2)}</p>
+                                        <p className="text-sm text-muted-foreground">{meal.calories || 0} kcal</p>
                                     </CardFooter>
                                 </Card>
                             ) : (

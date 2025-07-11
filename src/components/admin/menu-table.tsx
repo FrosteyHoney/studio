@@ -143,19 +143,6 @@ export function MenuTable() {
     }
   }
 
-  const getSafeImageUrl = (url: string | undefined) => {
-    const defaultImage = "https://placehold.co/400x300.png";
-    if (!url || (!url.startsWith('http://') && !url.startsWith('https://'))) {
-      return defaultImage;
-    }
-    try {
-      new URL(url);
-      return url;
-    } catch (error) {
-      return defaultImage;
-    }
-  };
-
   if (loading) {
     return (
         <div className="space-y-4">
@@ -195,7 +182,13 @@ export function MenuTable() {
         {meals.length > 0 ? meals.map((meal) => (
           <Card key={meal.id} className="flex flex-col">
             <div className="relative h-40 w-full">
-              <Image src={getSafeImageUrl(meal.image)} alt={meal.name} layout="fill" objectFit="cover" className="rounded-t-lg" data-ai-hint="meal food" />
+              <Image 
+                src={meal.image || "https://placehold.co/400x300.png"} 
+                alt={meal.name} 
+                fill 
+                className="object-cover rounded-t-lg" 
+                data-ai-hint="meal food" 
+              />
             </div>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg">{meal.name}</CardTitle>
