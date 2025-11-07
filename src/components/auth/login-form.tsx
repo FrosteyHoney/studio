@@ -50,11 +50,11 @@ export function LoginForm() {
       });
       router.push("/dashboard");
     } catch (error: any) {
-      if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
          toast({
           variant: "destructive",
           title: "Login Failed",
-          description: "Incorrect password or username. Please try again.",
+          description: "Incorrect password or email. Please try again.",
         });
       } else {
         toast({
@@ -76,9 +76,9 @@ export function LoginForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your username" {...field} />
+                <Input placeholder="Enter your email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
