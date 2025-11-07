@@ -8,6 +8,8 @@ import { db } from "@/lib/firebase"
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from "recharts"
 import { format } from "date-fns"
 import { Skeleton } from "@/components/ui/skeleton"
+import { errorEmitter } from "@/firebase/error-emitter"
+import { FirestorePermissionError } from "@/firebase/errors"
 
 interface StatHistoryEntry {
   date: string
@@ -40,7 +42,15 @@ export function ProgressChart() {
         .reverse() // Reverse to show oldest first
       setData(historyData)
       setLoading(false)
-    })
+    },
+    (serverError) => {
+        const permissionError = new FirestorePermissionError({
+            path: historyRef.path,
+            operation: 'list'
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        setLoading(false);
+    });
 
     return () => unsubscribe()
   }, [user])

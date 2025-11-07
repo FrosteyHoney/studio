@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowDown, ArrowUp, Weight, Ruler, BarChart, Percent, Dumbbell } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 interface UserStats {
   height: number;
@@ -62,6 +64,14 @@ export function UserStatsCards() {
         console.log("No such document!");
       }
       setLoading(false);
+    },
+    (serverError) => {
+        const permissionError = new FirestorePermissionError({
+            path: docRef.path,
+            operation: 'get'
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        setLoading(false);
     });
 
     return () => unsubscribe();
