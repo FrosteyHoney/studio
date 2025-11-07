@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -30,6 +29,8 @@ import {
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Loader2 } from "lucide-react";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 const healthyMealsSeedData = [
     // Breakfast
@@ -69,20 +70,20 @@ export function MenuTable() {
 
   const fetchMeals = useCallback(async () => {
     setLoading(true);
-    try {
-      const querySnapshot = await getDocs(collection(db, "menu"));
-      const mealsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MenuItem));
-      setMeals(mealsData);
-    } catch (error) {
-       toast({
-        variant: "destructive",
-        title: "Error fetching menu",
-        description: "Could not retrieve menu data from the database.",
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [toast]);
+    const menuCollection = collection(db, "menu");
+    getDocs(menuCollection).then(querySnapshot => {
+        const mealsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MenuItem));
+        setMeals(mealsData);
+    }).catch(serverError => {
+        const permissionError = new FirestorePermissionError({
+            path: menuCollection.path,
+            operation: 'list'
+        });
+        errorEmitter.emit('permission-error', permissionError);
+    }).finally(() => {
+        setLoading(false);
+    });
+  }, []);
 
   useEffect(() => {
     fetchMeals();
@@ -99,48 +100,48 @@ export function MenuTable() {
   };
   
   const handleDeleteMeal = async (mealId: string) => {
-    try {
-      await deleteDoc(doc(db, "menu", mealId));
-      setMeals(prevMeals => prevMeals.filter(meal => meal.id !== mealId));
-      toast({
-        title: "Meal Deleted",
-        description: "The meal has been successfully removed from the menu.",
-      });
-    } catch(error) {
-       toast({
-        variant: "destructive",
-        title: "Error Deleting Meal",
-        description: "There was a problem deleting the meal.",
-      });
-    }
+    const mealDocRef = doc(db, "menu", mealId);
+    deleteDoc(mealDocRef).then(() => {
+        setMeals(prevMeals => prevMeals.filter(meal => meal.id !== mealId));
+        toast({
+            title: "Meal Deleted",
+            description: "The meal has been successfully removed from the menu.",
+        });
+    }).catch(serverError => {
+        const permissionError = new FirestorePermissionError({
+            path: mealDocRef.path,
+            operation: 'delete'
+        });
+        errorEmitter.emit('permission-error', permissionError);
+    });
   };
 
   const handleSeedMenu = async () => {
     setIsSeeding(true);
-    try {
-        const batch = writeBatch(db);
-        const menuCollection = collection(db, "menu");
-        
-        healthyMealsSeedData.forEach(meal => {
-            const docRef = doc(menuCollection); // Automatically generate a new ID
-            batch.set(docRef, meal);
-        });
+    const batch = writeBatch(db);
+    const menuCollection = collection(db, "menu");
+    
+    healthyMealsSeedData.forEach(meal => {
+        const docRef = doc(menuCollection); // Automatically generate a new ID
+        batch.set(docRef, meal);
+    });
 
-        await batch.commit();
+    batch.commit().then(() => {
         toast({
             title: "Menu Created!",
             description: `${healthyMealsSeedData.length} healthy meals have been added to the menu.`,
         });
         fetchMeals(); // Refresh the list
-    } catch (error) {
-        toast({
-            variant: "destructive",
-            title: "Error Creating Menu",
-            description: "There was a problem adding the meals to the database.",
+    }).catch(serverError => {
+        const permissionError = new FirestorePermissionError({
+            path: menuCollection.path,
+            operation: 'create', // This is a batch write, approximating as 'create'
+            requestResourceData: healthyMealsSeedData,
         });
-    } finally {
+        errorEmitter.emit('permission-error', permissionError);
+    }).finally(() => {
         setIsSeeding(false);
-    }
+    });
   }
 
   const getSafeImageUrl = (url?: string) => {
@@ -194,7 +195,7 @@ export function MenuTable() {
                 src={getSafeImageUrl(meal.image)} 
                 alt={meal.name} 
                 fill 
-                className="object-cover rounded-t-lg" 
+                className="object-cover rounded-t-lg"
                 data-ai-hint="meal food" 
               />
             </div>
@@ -220,7 +221,7 @@ export function MenuTable() {
                     <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                     <AlertDialogDescription>
                         This action cannot be undone. This will permanently delete this meal from the menu.
-                    </AlertDialogDescription>
+                    </SerialDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>

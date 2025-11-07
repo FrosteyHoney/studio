@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -19,6 +18,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Dispatch, SetStateAction } from "react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 const formSchema = z.object({
   name: z.string().min(3, { message: "Name must be at least 3 characters." }),
@@ -52,30 +53,41 @@ export function MenuForm({ setOpen, initialData, onMealUpdated }: MenuFormProps)
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-        if (initialData) {
-            // Update existing meal
-            const mealRef = doc(db, "menu", initialData.id);
-            await updateDoc(mealRef, values);
+    if (initialData) {
+        // Update existing meal
+        const mealRef = doc(db, "menu", initialData.id);
+        updateDoc(mealRef, values).then(() => {
             toast({
                 title: 'Meal Updated',
                 description: `"${values.name}" has been successfully updated.`,
             });
-        } else {
-            // Add new meal
-            await addDoc(collection(db, "menu"), values);
+            onMealUpdated();
+            setOpen(false);
+        }).catch(serverError => {
+            const permissionError = new FirestorePermissionError({
+                path: mealRef.path,
+                operation: 'update',
+                requestResourceData: values
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        });
+    } else {
+        // Add new meal
+        const menuCollection = collection(db, "menu");
+        addDoc(menuCollection, values).then(() => {
             toast({
                 title: 'Meal Added',
                 description: `"${values.name}" has been successfully added to the menu.`,
             });
-        }
-        onMealUpdated();
-        setOpen(false);
-    } catch (error) {
-        toast({
-            variant: "destructive",
-            title: "Database Error",
-            description: "Could not save the meal. Please try again.",
+            onMealUpdated();
+            setOpen(false);
+        }).catch(serverError => {
+             const permissionError = new FirestorePermissionError({
+                path: menuCollection.path,
+                operation: 'create',
+                requestResourceData: values
+            });
+            errorEmitter.emit('permission-error', permissionError);
         });
     }
   }

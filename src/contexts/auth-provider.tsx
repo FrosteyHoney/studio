@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 
 interface AuthContextType {
   user: User | null;
@@ -39,6 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   
   return (
     <AuthContext.Provider value={{ user, loading, isAdmin }}>
+      <FirebaseErrorListener />
       {children}
     </AuthContext.Provider>
   );

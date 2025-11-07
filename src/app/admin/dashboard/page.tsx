@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +6,8 @@ import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Skeleton } from "@/components/ui/skeleton";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 export default function AdminDashboardPage() {
     const [userCount, setUserCount] = useState<number | null>(null);
@@ -15,7 +16,16 @@ export default function AdminDashboardPage() {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const usersSnapshot = await getDocs(collection(db, "users"));
+                const usersCollectionRef = collection(db, "users");
+                const usersSnapshot = await getDocs(usersCollectionRef).catch(serverError => {
+                    const permissionError = new FirestorePermissionError({
+                        path: usersCollectionRef.path,
+                        operation: 'list'
+                    });
+                    errorEmitter.emit('permission-error', permissionError);
+                    // Return an empty snapshot to avoid crashing the app
+                    return { size: 0, docs: [] };
+                });
                 setUserCount(usersSnapshot.size);
 
             } catch (error) {
