@@ -10,11 +10,11 @@ service cloud.firestore {
     // Rules for the 'users' collection
     match /users/{userId} {
       // Admins can read/list all user documents
-      allow list, get: if isAdmin();
+      allow list: if isAdmin();
       // Any authenticated user can create their own user document
       allow create: if request.auth != null && request.auth.uid == userId;
-      // A user can only read or update their own document
-      allow read, update: if request.auth != null && request.auth.uid == userId;
+      // A user can only read or update their own document, or an admin can read any document
+      allow read, update: if (request.auth != null && request.auth.uid == userId) || isAdmin();
       // Only admins can delete users
       allow delete: if isAdmin();
     }
@@ -23,8 +23,9 @@ service cloud.firestore {
     match /users/{userId}/statHistory/{historyId} {
         // A user can read their own history, admins can read anyone's
         allow get, list: if (request.auth != null && request.auth.uid == userId) || isAdmin();
-        // Only admins can create, update, or delete stat history
-        allow create, update, delete: if isAdmin();
+        // Admins and the user can create history entries. Only admins can update or delete.
+        allow create: if (request.auth != null && request.auth.uid == userId) || isAdmin();
+        allow update, delete: if isAdmin();
     }
 
     // Rules for the 'menu' collection
@@ -39,8 +40,8 @@ service cloud.firestore {
     match /mealPlans/{userId} {
         // A user can read their own meal plan, admins can read any plan
         allow get: if (request.auth != null && request.auth.uid == userId) || isAdmin();
-        // Only admins can create or update meal plans for any user
-        allow create, update: if isAdmin();
+        // Admins can create or update meal plans for any user. Users can also create/update their own plan.
+        allow create, update: if (request.auth != null && request.auth.uid == userId) || isAdmin();
     }
   }
 }
