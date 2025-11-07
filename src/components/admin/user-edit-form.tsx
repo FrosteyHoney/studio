@@ -18,6 +18,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Dispatch, SetStateAction } from "react";
 import { doc, updateDoc, collection, addDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 const formSchema = z.object({
   height: z.coerce.number().min(0, { message: "Height must be a positive number." }),
@@ -64,25 +66,32 @@ export function UserEditForm({ setOpen, initialData, onUserUpdated }: UserEditFo
         return;
     }
     
-    try {
-        const userRef = doc(db, "users", initialData.id);
-        
-        // Prepare the update object with previous values
-        const updateData = {
-          ...values,
-          prevWeight: initialData.weight,
-          prevBmi: initialData.bmi,
-          prevBodyFat: initialData.bodyFat,
-          prevMuscleMass: initialData.muscleMass,
-        };
+    const userRef = doc(db, "users", initialData.id);
+    
+    // Prepare the update object with previous values
+    const updateData = {
+      ...values,
+      prevWeight: initialData.weight,
+      prevBmi: initialData.bmi,
+      prevBodyFat: initialData.bodyFat,
+      prevMuscleMass: initialData.muscleMass,
+    };
 
-        await updateDoc(userRef, updateData);
-        
+    updateDoc(userRef, updateData).then(() => {
         // Add to history subcollection
         const historyRef = collection(db, "users", initialData.id, "statHistory");
-        await addDoc(historyRef, {
+        const historyData = {
             ...values,
             date: new Date().toISOString(),
+        };
+
+        addDoc(historyRef, historyData).catch(serverError => {
+            const permissionError = new FirestorePermissionError({
+                path: historyRef.path,
+                operation: 'create',
+                requestResourceData: historyData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
         });
 
         const changes: StatChange = {
@@ -99,13 +108,15 @@ export function UserEditForm({ setOpen, initialData, onUserUpdated }: UserEditFo
         });
         onUserUpdated(initialData.id, changes);
         setOpen(false);
-    } catch (error) {
-        toast({
-            variant: "destructive",
-            title: "Update Failed",
-            description: "Could not save user details to the database.",
+
+    }).catch(serverError => {
+        const permissionError = new FirestorePermissionError({
+            path: userRef.path,
+            operation: 'update',
+            requestResourceData: updateData,
         });
-    }
+        errorEmitter.emit('permission-error', permissionError);
+    });
   }
 
   return (
