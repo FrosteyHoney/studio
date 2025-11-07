@@ -26,8 +26,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       // Mock admin check for demonstration.
-      // Use 'admin@committedbodies.com' to log in as an admin.
-      if (user && user.email === 'admin@committedbodies.com') {
+      // List of admin emails.
+      const adminEmails = ['admin@committedbodies.com', 'myburghjobro@gmail.com'];
+      if (user && user.email && adminEmails.includes(user.email)) {
         setIsAdmin(true);
       } else {
         setIsAdmin(false);
