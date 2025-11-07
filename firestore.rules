@@ -30,10 +30,10 @@ service cloud.firestore {
 
     // Rules for the 'menu' collection
     match /menu/{mealId} {
-        // Any authenticated user can read the menu
-        allow get, list: if request.auth != null;
-        // Only admins can create, update, or delete menu items
-        allow create, update, delete: if isAdmin();
+        // Any authenticated user can read an individual meal
+        allow get: if request.auth != null;
+        // Admins can list all meals, and create/update/delete them
+        allow list, create, update, delete: if isAdmin();
     }
 
     // Rules for the 'mealPlans' collection
