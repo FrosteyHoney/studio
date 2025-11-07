@@ -50,11 +50,19 @@ export function LoginForm() {
       });
       router.push("/dashboard");
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: error.message,
-      });
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+         toast({
+          variant: "destructive",
+          title: "Login Failed",
+          description: "Incorrect password or username. Please try again.",
+        });
+      } else {
+        toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: error.message,
+        });
+      }
     } finally {
       setIsLoading(false);
     }
