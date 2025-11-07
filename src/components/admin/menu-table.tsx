@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -74,7 +75,7 @@ export function MenuTable() {
     getDocs(menuCollection).then(querySnapshot => {
         const mealsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MenuItem));
         setMeals(mealsData);
-    }).catch(serverError => {
+    }).catch(async (serverError) => {
         const permissionError = new FirestorePermissionError({
             path: menuCollection.path,
             operation: 'list'
@@ -107,7 +108,7 @@ export function MenuTable() {
             title: "Meal Deleted",
             description: "The meal has been successfully removed from the menu.",
         });
-    }).catch(serverError => {
+    }).catch(async (serverError) => {
         const permissionError = new FirestorePermissionError({
             path: mealDocRef.path,
             operation: 'delete'
@@ -132,7 +133,7 @@ export function MenuTable() {
             description: `${healthyMealsSeedData.length} healthy meals have been added to the menu.`,
         });
         fetchMeals(); // Refresh the list
-    }).catch(serverError => {
+    }).catch(async (serverError) => {
         const permissionError = new FirestorePermissionError({
             path: menuCollection.path,
             operation: 'create', // This is a batch write, approximating as 'create'
@@ -143,14 +144,6 @@ export function MenuTable() {
         setIsSeeding(false);
     });
   }
-
-  const getSafeImageUrl = (url?: string) => {
-    const placeholder = "https://placehold.co/400x300.png";
-    if (!url || (!url.startsWith('http://') && !url.startsWith('https://'))) {
-      return placeholder;
-    }
-    return url;
-  };
 
   if (loading) {
     return (
@@ -191,12 +184,12 @@ export function MenuTable() {
         {meals.length > 0 ? meals.map((meal) => (
           <Card key={meal.id} className="flex flex-col">
             <div className="relative h-40 w-full">
-              <Image 
-                src={getSafeImageUrl(meal.image)} 
-                alt={meal.name} 
-                fill 
+              <Image
+                src={(meal.image && (meal.image.startsWith('http://') || meal.image.startsWith('https://'))) ? meal.image : "https://placehold.co/400x300.png"}
+                alt={meal.name}
+                fill
                 className="object-cover rounded-t-lg"
-                data-ai-hint="meal food" 
+                data-ai-hint="meal food"
               />
             </div>
             <CardHeader className="pb-2">
@@ -221,7 +214,7 @@ export function MenuTable() {
                     <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                     <AlertDialogDescription>
                         This action cannot be undone. This will permanently delete this meal from the menu.
-                    </SerialDescription>
+                    </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
