@@ -16,11 +16,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Loader2, Eye, EyeOff } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -44,7 +44,33 @@ export function LoginForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
+      const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+      const user = userCredential.user;
+
+      // Check if user document exists in Firestore
+      const userDocRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc.exists()) {
+        // If no document, create one. This handles users created via Auth but not DB.
+        await setDoc(userDocRef, {
+            id: user.uid,
+            name: user.displayName || 'New Member',
+            email: user.email,
+            status: "Active",
+            joined: new Date().toISOString().split('T')[0], 
+            height: 0,
+            weight: 0,
+            bmi: 0,
+            bodyFat: 0,
+            muscleMass: 0,
+            prevWeight: 0,
+            prevBmi: 0,
+            prevBodyFat: 0,
+            prevMuscleMass: 0,
+        });
+      }
+
       toast({
         title: "Login Successful",
         description: "Welcome back!",
