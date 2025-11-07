@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
@@ -25,9 +26,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
-      // Mock admin check for demonstration.
-      // List of admin emails.
-      const adminEmails = ['admin@committedbodies.com', 'myburghjobro@gmail.com'];
+      // This now designates a single email as the administrator.
+      const adminEmails = ['myburghjobro@gmail.com'];
       if (user && user.email && adminEmails.includes(user.email)) {
         setIsAdmin(true);
       } else {
