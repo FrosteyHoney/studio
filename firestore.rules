@@ -10,13 +10,13 @@ service cloud.firestore {
     // Rules for the 'users' collection
     match /users/{userId} {
       // Admins can read/list all user documents
-      allow list: if isAdmin();
+      allow list, read: if isAdmin();
       // Any authenticated user can create their own user document
       allow create: if request.auth != null && request.auth.uid == userId;
-      // A user can only read or update their own document, or an admin can read any document
-      allow read, update: if (request.auth != null && request.auth.uid == userId) || isAdmin();
-      // Only admins can delete users
-      allow delete: if isAdmin();
+      // A user can only read or update their own document
+      allow read, update: if request.auth != null && request.auth.uid == userId;
+      // Only admins can delete users or update any user
+      allow update, delete: if isAdmin();
     }
     
     // Rules for user stat history
