@@ -183,7 +183,7 @@ export function SignUpForm() {
           Sign Up
         </Button>
          <div className="text-center text-sm text-muted-foreground pt-4">
-            Already have an account? <Button variant="link" className="p-0 h-auto text-primary" type="button">Sign In</Button>
+            Already have an account? <Button variant="link" className="p-0 h-auto text-primary" type="button" onClick={() => router.push('/?tab=login')}>Sign In</Button>
         </div>
       </form>
     </Form>

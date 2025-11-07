@@ -20,6 +20,7 @@ import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -124,7 +125,7 @@ export function LoginForm() {
           Sign In
         </Button>
         <div className="text-center text-sm text-muted-foreground pt-4">
-            New to Committed Bodies? <Button variant="link" className="p-0 h-auto text-primary" type="button">Create Account</Button>
+            New to Committed Bodies? <Button variant="link" className="p-0 h-auto text-primary" type="button" onClick={() => router.push('/?tab=signup')}>Create Account</Button>
         </div>
       </form>
     </Form>
