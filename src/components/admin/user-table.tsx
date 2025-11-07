@@ -38,6 +38,8 @@ import { db } from "@/lib/firebase";
 import { Skeleton } from "../ui/skeleton";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 interface User { 
   id: string; 
@@ -67,21 +69,20 @@ export function UserTable() {
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
-    try {
-      const querySnapshot = await getDocs(collection(db, "users"));
-      const usersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
-      setUsers(usersData);
-    } catch (error) {
-      console.error("Error fetching users: ", error);
-      toast({
-        variant: "destructive",
-        title: "Error fetching users",
-        description: "Could not retrieve user data from the database.",
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [toast]);
+    const usersCollection = collection(db, "users");
+    getDocs(usersCollection).then(querySnapshot => {
+        const usersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
+        setUsers(usersData);
+    }).catch(serverError => {
+        const permissionError = new FirestorePermissionError({
+            path: usersCollection.path,
+            operation: 'list',
+        });
+        errorEmitter.emit('permission-error', permissionError);
+    }).finally(() => {
+        setLoading(false);
+    });
+  }, []);
 
   useEffect(() => {
     fetchUsers();
@@ -106,20 +107,20 @@ export function UserTable() {
   };
   
   const handleDeleteUser = async (userId: string) => {
-    try {
-      await deleteDoc(doc(db, "users", userId));
+    const userDocRef = doc(db, "users", userId);
+    deleteDoc(userDocRef).then(() => {
       setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
       toast({
         title: "User Deleted",
         description: "The user has been successfully removed.",
       });
-    } catch(error) {
-       toast({
-        variant: "destructive",
-        title: "Error Deleting User",
-        description: "There was a problem deleting the user.",
+    }).catch(serverError => {
+      const permissionError = new FirestorePermissionError({
+        path: userDocRef.path,
+        operation: 'delete',
       });
-    }
+      errorEmitter.emit('permission-error', permissionError);
+    });
   };
 
   const StatChangeIndicator = ({ change, good }: { change: number; good: 'up' | 'down' }) => {
