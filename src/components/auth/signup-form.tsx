@@ -81,11 +81,19 @@ export function SignUpForm() {
       });
       router.push("/dashboard");
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: `Firebase: Error (${error.code || error.message})`,
-      });
+      if (error.code === 'auth/email-already-in-use') {
+        toast({
+          variant: "destructive",
+          title: "Sign Up Failed",
+          description: "This email is already in use. Please try logging in instead.",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: `Firebase: Error (${error.code || error.message})`,
+        });
+      }
     } finally {
       setIsLoading(false);
     }
