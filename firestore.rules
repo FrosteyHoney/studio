@@ -10,7 +10,7 @@ service cloud.firestore {
     // Rules for the 'users' collection
     match /users/{userId} {
       // A user can read their own document, or an admin can read any document. Admins can list all.
-      allow read: if (request.auth != null && request.auth.uid == userId) || isAdmin();
+      allow get: if (request.auth != null && request.auth.uid == userId) || isAdmin();
       allow list: if isAdmin();
       // Any authenticated user can create their own user document
       allow create: if request.auth != null && request.auth.uid == userId;
