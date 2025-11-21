@@ -15,10 +15,10 @@ service cloud.firestore {
 
     // Rules for the 'users' collection
     match /users/{userId} {
-      // Admins can read and write any user document
+      // Admins can perform any action on any user document
       allow read, write: if isAdmin();
       
-      // A user can create their own document
+      // A user can create their own document when they first sign up/log in
       allow create: if request.auth != null && request.auth.uid == userId;
       
       // A user can read their own document
@@ -29,11 +29,11 @@ service cloud.firestore {
 
       // Rules for the 'statHistory' subcollection
       match /statHistory/{historyId} {
-        // A user can read their own stat history
-        allow get, list: if request.auth != null && request.auth.uid == userId;
+        // A user can read the list of their own stat history entries for the chart
+        allow list, get: if request.auth != null && request.auth.uid == userId;
 
-        // Only admins can create history entries
-        allow create: if isAdmin();
+        // Only admins can create, update or delete history entries directly
+        allow create, update, delete: if isAdmin();
       }
     }
     
