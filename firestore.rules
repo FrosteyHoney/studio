@@ -2,52 +2,10 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper function to check if the requesting user is an admin
-    function isAdmin() {
-      return request.auth.token.email == 'myburghjobro@gmail.com';
-    }
-
-    // Returns true if the requesting user is the owner of the document.
-    function isOwner(userId) {
-      return request.auth != null && request.auth.uid == userId;
-    }
-
-    // Rules for the 'users' collection
-    match /users/{userId} {
-      // Admins can do anything.
-      allow read, write: if isAdmin();
-      
-      // A user can get their own document.
-      allow get: if isOwner(userId);
-
-      // A user can create and update their own document.
-      allow create, update: if isOwner(userId);
-    }
-    
-    // Rules for user stat history
-    match /users/{userId}/statHistory/{historyId} {
-        // A user can read/list their own history
-        allow get, list: if isOwner(userId);
-        // Admins can read/write anyone's history
-        allow read, write: if isAdmin();
-        // A user can create their own history entries
-        allow create: if isOwner(userId);
-    }
-
-    // Rules for the 'menu' collection
-    match /menu/{mealId} {
-        // Any authenticated user can read an individual meal.
-        allow get: if request.auth != null;
-        // Only admins can modify the menu
-        allow list, create, update, delete: if isAdmin();
-    }
-
-    // Rules for the 'mealPlans' collection
-    match /mealPlans/{userId} {
-        // A user can read their own meal plan, admins can read any plan
-        allow get: if isOwner(userId) || isAdmin();
-        // Admins and users can create or update their own meal plans.
-        allow create, update: if isOwner(userId) || isAdmin();
+    match /{document=**} {
+      // WARNING: This rule allows open access to your entire database.
+      // It is highly insecure and should only be used for temporary debugging.
+      allow read, write: if true;
     }
   }
 }
