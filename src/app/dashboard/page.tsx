@@ -7,15 +7,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserStatsCards } from "@/components/dashboard/user-stats-cards";
 import { Button } from "@/components/ui/button";
 import { doc, setDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { db, auth } from "@/lib/firebase";
 import { toast } from "@/hooks/use-toast";
 import { Wifi } from "lucide-react";
 
 export default function DashboardPage() {
   const handleTestConnection = async () => {
     try {
+      const currentUser = auth.currentUser;
+      console.log("Attempting write with user:", currentUser?.uid || "No user found");
       const testDocRef = doc(db, "test", "connection");
-      await setDoc(testDocRef, { status: "connected", timestamp: new Date() });
+      await setDoc(testDocRef, { status: "connected", timestamp: new Date(), uid: currentUser?.uid || null });
       console.log("Database connection successful!");
       toast({
         title: "Connection Success!",

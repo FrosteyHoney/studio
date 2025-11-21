@@ -4,19 +4,18 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Allow writing to a specific test document for connectivity checks.
+    // Allow writing to a specific test document for connectivity checks
+    // if the user is authenticated.
     match /test/connection {
-      allow write: if true;
+      allow write: if request.auth != null;
     }
 
     // Rules for the 'users' collection
     match /users/{userId} {
       // Any authenticated user can create their own user document.
-      // This is essential for the sign-up process.
       allow create: if request.auth.uid == userId;
 
       // Users can only read their own data.
-      // Admins can read any user's data (we will add admin logic later).
       allow read: if request.auth.uid == userId;
       
       // Users can update their own data.
