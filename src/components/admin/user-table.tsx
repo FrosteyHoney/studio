@@ -70,6 +70,8 @@ export function UserTable() {
   const [statChanges, setStatChanges] = useState<StatChanges>({});
   const { toast } = useToast();
 
+  const isSuperAdmin = currentUser?.email === 'myburghjobro@gmail.com';
+
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     const usersCollection = collection(db, "users");
@@ -243,13 +245,15 @@ export function UserTable() {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="inline-flex rounded-md shadow-sm">
-                      <Button variant="outline" size="sm" className="rounded-none" onClick={() => handleEdit(user)}>Edit</Button>
-                      <Button variant="outline" size="sm" className="rounded-none" onClick={() => handleMakeAdmin(user)}>
-                        {user.isAdmin ? 'Revoke Admin' : 'Make Admin'}
-                      </Button>
+                      <Button variant="outline" size="sm" className="rounded-none rounded-l-md" onClick={() => handleEdit(user)}>Edit</Button>
+                       {isSuperAdmin && (
+                        <Button variant="outline" size="sm" className="rounded-none" onClick={() => handleMakeAdmin(user)}>
+                          {user.isAdmin ? 'Revoke Admin' : 'Make Admin'}
+                        </Button>
+                      )}
                       <AlertDialog>
                       <AlertDialogTrigger asChild>
-                          <Button variant="destructive" size="sm" className="rounded-l-none">Delete</Button>
+                          <Button variant="destructive" size="sm" className={cn("rounded-l-none", !isSuperAdmin && "rounded-r-md")}>Delete</Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                           <AlertDialogHeader>

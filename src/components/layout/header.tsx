@@ -56,7 +56,7 @@ export function Header() {
         </Link>
         <div className="my-4 h-[calc(100vh-8rem)]">
           <div className="flex flex-col space-y-3 pl-4">
-             {user && (
+             {user && !isAdmin && (
               <>
                 <Link
                   href="/dashboard"
@@ -101,7 +101,7 @@ export function Header() {
             </span>
           </Link>
           <nav className="flex items-center gap-6 text-sm">
-            {user && (
+            {user && !isAdmin && (
               <>
                 <Link
                   href="/dashboard"
@@ -148,10 +148,12 @@ export function Header() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push('/dashboard')}>
-                  <UserIcon className="mr-2 h-4 w-4" />
-                  <span>Dashboard</span>
-                </DropdownMenuItem>
+                {!isAdmin && (
+                    <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+                        <UserIcon className="mr-2 h-4 w-4" />
+                        <span>Dashboard</span>
+                    </DropdownMenuItem>
+                )}
                  <DropdownMenuItem onClick={() => router.push('/dashboard/settings')}>
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
