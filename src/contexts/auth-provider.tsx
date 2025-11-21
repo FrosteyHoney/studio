@@ -39,13 +39,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (user) {
-      // Temporary hardcoded admin for initial setup
+      // Hardcoded admin for initial setup. If this user logs in, they are admin.
       if (user.email === 'myburghjobro@gmail.com') {
         setIsAdmin(true);
         setLoading(false);
-        return;
+        return; // Stop further checks
       }
       
+      // For all other users, check their document in Firestore.
       const userDocRef = doc(db, 'users', user.uid);
       const unsubscribeFirestore = onSnapshot(userDocRef, (doc) => {
         if (doc.exists() && doc.data().isAdmin) {
@@ -72,5 +73,3 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
-
-    
