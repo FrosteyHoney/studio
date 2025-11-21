@@ -6,8 +6,8 @@ import { Header } from '@/components/layout/header';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export const metadata: Metadata = {
-  title: 'Committed Bodies | Fitness & Meal Planning App',
-  description: 'Committed Bodies is your all-in-one fitness and meal planning application. Track workouts, get personalized meal plans, and monitor your progress to achieve your health goals. Your journey to a healthier lifestyle starts here with Committed Bodies.',
+  title: 'Committed Bodies: The Official Fitness & Meal Planning App',
+  description: 'Welcome to Committed Bodies, your all-in-one fitness and meal planning application. Track workouts, get personalized meal plans, and monitor your progress. Your journey to a healthier lifestyle starts with Committed Bodies.',
   keywords: 'Committed Bodies, CommittedBodiesApp, fitness app, meal planning, workout tracker, health, nutrition, diet plan',
 };
 
