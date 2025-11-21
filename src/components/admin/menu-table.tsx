@@ -31,6 +31,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Badge } from "../ui/badge";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { RefreshCw } from "lucide-react";
 
 export function MenuTable() {
   const [meals, setMeals] = useState<MenuItem[]>([]);
@@ -45,6 +46,10 @@ export function MenuTable() {
     getDocs(menuCollection).then(querySnapshot => {
         const mealsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MenuItem));
         setMeals(mealsData);
+        toast({
+            title: "Menu Updated",
+            description: "The menu has been synced with the database.",
+        });
     }).catch(async (serverError) => {
         const permissionError = new FirestorePermissionError({
             path: menuCollection.path,
@@ -55,7 +60,7 @@ export function MenuTable() {
     }).finally(() => {
         setLoading(false);
     });
-  }, []);
+  }, [toast]);
 
   useEffect(() => {
     fetchMeals();
@@ -93,6 +98,7 @@ export function MenuTable() {
         <div className="space-y-4">
             <div className="flex justify-end gap-2">
                 <Skeleton className="h-10 w-32" />
+                <Skeleton className="h-10 w-32" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
               {[...Array(4)].map((_, i) => (
@@ -116,6 +122,10 @@ export function MenuTable() {
   return (
     <>
       <div className="flex justify-end gap-2">
+        <Button onClick={fetchMeals} variant="outline" disabled={loading}>
+          <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          Update Menu
+        </Button>
         <Button onClick={handleAddNew}>Add New Meal</Button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
