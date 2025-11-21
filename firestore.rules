@@ -3,13 +3,28 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // This rule allows anyone to write to the 'test/connection' document.
-    // It's used by the "Test DB Connection" button to verify connectivity.
+
+    // Allow writing to a specific test document for connectivity checks.
     match /test/connection {
       allow write: if true;
     }
 
-    // By default, deny all other access. This is a secure starting point.
+    // Rules for the 'users' collection
+    match /users/{userId} {
+      // Any authenticated user can create their own user document.
+      // This is essential for the sign-up process.
+      allow create: if request.auth.uid == userId;
+
+      // Users can only read their own data.
+      // Admins can read any user's data (we will add admin logic later).
+      allow read: if request.auth.uid == userId;
+      
+      // Users can update their own data.
+      allow update: if request.auth.uid == userId;
+    }
+    
+    // By default, deny all other access to all other documents.
+    // This is a secure starting point.
     match /{document=**} {
       allow read, write: if false;
     }
