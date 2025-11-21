@@ -6,6 +6,9 @@
 # available regions, see: https://firebase.google.com/docs/app-hosting/locations
 location: us-central1
 
+# This is required to link the backend to a hosting site.
+required: true
+
 runConfig:
   # Increase this value if you'd like to automatically spin up
   # more instances in response to increased traffic.

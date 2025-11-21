@@ -7,8 +7,12 @@
         "firebase.json",
         "**/.*",
         "**/node_modules/**"
-      ],
-      "frameworksBackend": {}
+      ]
     }
-  ]
+  ],
+  "apphosting": {
+    "backends": [
+      "apphosting.yaml"
+    ]
+  }
 }
