@@ -6,8 +6,9 @@ import { Header } from '@/components/layout/header';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export const metadata: Metadata = {
-  title: 'Committed Bodies Hub',
-  description: 'Your one-stop hub for fitness and meal planning.',
+  title: 'Committed Bodies | Fitness & Meal Planning Hub',
+  description: 'Join Committed Bodies, your all-in-one hub for achieving fitness goals with personalized meal planning, workout tracking, and progress monitoring. Your journey to a healthier lifestyle starts here.',
+  keywords: 'Committed Bodies, fitness, meal planning, workout tracker, health, nutrition, gym, exercise, diet plan',
 };
 
 export default function RootLayout({
