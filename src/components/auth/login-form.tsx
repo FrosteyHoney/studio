@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
@@ -41,18 +41,46 @@ export function LoginForm() {
     },
   });
 
+  async function handlePasswordReset() {
+    const email = form.getValues("email");
+    if (!email) {
+      form.trigger("email");
+      toast({
+        variant: "destructive",
+        title: "Email required",
+        description: "Please enter your email address to reset your password.",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, email);
+      toast({
+        title: "Password Reset Email Sent",
+        description: `If an account exists for ${email}, a password reset link has been sent to it.`,
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error sending reset email",
+        description: error.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 
-      // Check if user document exists in Firestore
       const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);
 
       if (!userDoc.exists()) {
-        // If no document, create one. This handles users created via Auth but not DB.
         await setDoc(userDocRef, {
             id: user.uid,
             name: user.displayName || 'New Member',
@@ -116,7 +144,10 @@ export function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <div className="flex justify-between items-center">
+                <FormLabel>Password</FormLabel>
+                <Button variant="link" className="p-0 h-auto text-xs text-muted-foreground" type="button" onClick={handlePasswordReset}>Forgot Password?</Button>
+              </div>
               <div className="relative">
                 <FormControl>
                   <Input
