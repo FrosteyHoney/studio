@@ -62,7 +62,7 @@ interface StatChanges {
 }
 
 export function UserTable() {
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, isAdmin } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -74,6 +74,11 @@ export function UserTable() {
   const isSuperAdmin = currentUser?.email === 'myburghjobro@gmail.com';
 
   const fetchUsers = useCallback(async () => {
+    if (!isAdmin) {
+      setUsers([]);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     const usersCollection = collection(db, "users");
     getDocs(usersCollection).then(querySnapshot => {
@@ -89,7 +94,7 @@ export function UserTable() {
     }).finally(() => {
         setLoading(false);
     });
-  }, []);
+  }, [isAdmin]);
 
   useEffect(() => {
     fetchUsers();
@@ -199,6 +204,14 @@ export function UserTable() {
             </div>
             <Skeleton className="h-[400px] w-full" />
         </div>
+    )
+  }
+  
+  if (!isAdmin) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">You do not have permission to view this page.</p>
+      </div>
     )
   }
 

@@ -26,64 +26,63 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isTrainer, setIsTrainer] = useState(false);
-  const [dbIsAdmin, setDbIsAdmin] = useState(false);
+  const [lastKnownDbIsAdmin, setLastKnownDbIsAdmin] = useState<boolean | undefined>(undefined);
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+      setLoading(true);
       setUser(user);
       if (user) {
-        // Super admin check
-        const isSuperAdmin = user.email === 'myburghjobro@gmail.com';
-
-        const tokenResult = await user.getIdTokenResult();
-        const claimsIsAdmin = !!tokenResult.claims.admin;
-        
-        // User is admin if they are super admin, have the claim, or the flag in the DB
-        setIsAdmin(isSuperAdmin || claimsIsAdmin || dbIsAdmin);
-        setIsTrainer(!!tokenResult.claims.trainer);
-        
+        try {
+          const tokenResult = await user.getIdTokenResult();
+          const claimsIsAdmin = !!tokenResult.claims.admin;
+          const isSuperAdmin = user.email === 'myburghjobro@gmail.com';
+          
+          setIsAdmin(isSuperAdmin || claimsIsAdmin);
+          setIsTrainer(!!tokenResult.claims.trainer);
+        } catch (error) {
+          console.error("Error fetching user token:", error);
+          setIsAdmin(false);
+          setIsTrainer(false);
+        }
       } else {
         setIsAdmin(false);
         setIsTrainer(false);
+        setLastKnownDbIsAdmin(undefined);
       }
       setLoading(false);
     });
     
     return () => unsubscribeAuth();
-  }, [user, dbIsAdmin]); // Re-run when user or db admin status changes
+  }, []);
 
   useEffect(() => {
     if (user) {
-      setLoading(true);
       const userDocRef = doc(db, 'users', user.uid);
       const unsubscribeFirestore = onSnapshot(userDocRef, async (doc) => {
         if (doc.exists()) {
             const data = doc.data();
-            const databaseIsAdmin = !!data.isAdmin;
-            
-            // Update dbIsAdmin state if it has changed
-            if(databaseIsAdmin !== dbIsAdmin) {
-                setDbIsAdmin(databaseIsAdmin);
-            }
+            const currentDbIsAdmin = !!data.isAdmin;
 
-            // Force a token refresh if the DB role doesn't match the token claim
-            const tokenResult = await user.getIdTokenResult();
-            if (databaseIsAdmin !== !!tokenResult.claims.admin) {
-              console.log("Admin status mismatch, forcing token refresh...");
-              await user.getIdToken(true);
+            // If the database role has changed since we last checked, force a token refresh.
+            if (lastKnownDbIsAdmin !== undefined && lastKnownDbIsAdmin !== currentDbIsAdmin) {
+              console.log("Admin role change detected in DB, forcing token refresh...");
+              await user.getIdToken(true); // This forces a refresh
+              // Re-check claims after refresh
+              const tokenResult = await user.getIdTokenResult();
+              setIsAdmin(user.email === 'myburghjobro@gmail.com' || !!tokenResult.claims.admin);
             }
+            // Update our last known state from the DB.
+            setLastKnownDbIsAdmin(currentDbIsAdmin);
         }
-        setLoading(false);
       }, (error) => {
-        console.error("Error fetching user document:", error);
-        setLoading(false);
+        // This listener might fail if the user has no read access to their own doc yet.
+        // We shouldn't crash the app, just log it. The main auth logic is token-based.
+        console.warn("Could not set up listener for user document:", error.message);
       });
       return () => unsubscribeFirestore();
-    } else {
-        // No user, no db admin status
-        setDbIsAdmin(false);
     }
-  }, [user]);
+  }, [user, lastKnownDbIsAdmin]);
   
   return (
     <AuthContext.Provider value={{ user, loading, isAdmin, isTrainer }}>
