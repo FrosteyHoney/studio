@@ -18,11 +18,13 @@ service cloud.firestore {
       // Admins can read and write any user document
       allow read, write: if isAdmin();
       
+      // A user can create their own document
+      allow create: if request.auth != null && request.auth.uid == userId;
+      
       // A user can read their own document
       allow get: if request.auth != null && request.auth.uid == userId;
       
       // A user can update their own document
-      // Note: Be specific about which fields can be updated if needed
       allow update: if request.auth != null && request.auth.uid == userId;
 
       // Rules for the 'statHistory' subcollection
@@ -30,7 +32,7 @@ service cloud.firestore {
         // A user can read their own stat history
         allow get, list: if request.auth != null && request.auth.uid == userId;
 
-        // Only admins can create history entries (as per the UserEditForm)
+        // Only admins can create history entries
         allow create: if isAdmin();
       }
     }
