@@ -97,6 +97,7 @@ export function LoginForm() {
             prevBmi: 0,
             prevBodyFat: 0,
             prevMuscleMass: 0,
+            isAdmin: false,
         });
         toast({
           title: "Profile Initialized",
@@ -195,3 +196,5 @@ export function LoginForm() {
     </Form>
   );
 }
+
+    

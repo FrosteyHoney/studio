@@ -72,6 +72,7 @@ export function SignUpForm() {
             prevBmi: 0,
             prevBodyFat: 0,
             prevMuscleMass: 0,
+            isAdmin: false,
         });
       }
 
@@ -189,3 +190,5 @@ export function SignUpForm() {
     </Form>
   );
 }
+
+    

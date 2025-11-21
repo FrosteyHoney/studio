@@ -3,7 +3,8 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 
 interface AuthContextType {
@@ -24,20 +25,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       setUser(user);
-      // This now designates a single email as the administrator.
-      const adminEmails = ['myburghjobro@gmail.com'];
-      if (user && user.email && adminEmails.includes(user.email)) {
-        setIsAdmin(true);
-      } else {
+      if (!user) {
+        // If there's no user, they can't be an admin.
         setIsAdmin(false);
+        setLoading(false);
       }
-      setLoading(false);
     });
-
-    return () => unsubscribe();
+    
+    return () => unsubscribeAuth();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      const userDocRef = doc(db, 'users', user.uid);
+      const unsubscribeFirestore = onSnapshot(userDocRef, (doc) => {
+        if (doc.exists() && doc.data().isAdmin) {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
+        setLoading(false);
+      }, (error) => {
+        console.error("Error fetching user admin status:", error);
+        setIsAdmin(false);
+        setLoading(false);
+      });
+      return () => unsubscribeFirestore();
+    }
+  }, [user]);
   
   return (
     <AuthContext.Provider value={{ user, loading, isAdmin }}>
@@ -48,3 +65,5 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
+
+    

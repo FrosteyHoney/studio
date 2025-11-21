@@ -33,13 +33,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { UserEditForm, type StatChange } from "./user-edit-form";
 import { useToast } from "@/hooks/use-toast";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Skeleton } from "../ui/skeleton";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ArrowDown, ArrowUp, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { useAuth } from "@/contexts/auth-provider";
 
 interface User { 
   id: string; 
@@ -52,6 +53,7 @@ interface User {
   bmi: number;
   bodyFat: number;
   muscleMass: number;
+  isAdmin?: boolean;
 }
 
 interface StatChanges {
@@ -59,6 +61,7 @@ interface StatChanges {
 }
 
 export function UserTable() {
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -124,6 +127,25 @@ export function UserTable() {
     });
   };
 
+  const handleMakeAdmin = async (user: User) => {
+    const userDocRef = doc(db, "users", user.id);
+    const newAdminStatus = !user.isAdmin;
+    updateDoc(userDocRef, { isAdmin: newAdminStatus }).then(() => {
+        toast({
+            title: `Admin Status Updated`,
+            description: `${user.name} is now ${newAdminStatus ? 'an admin' : 'no longer an admin'}.`
+        });
+        fetchUsers();
+    }).catch(serverError => {
+        const permissionError = new FirestorePermissionError({
+            path: userDocRef.path,
+            operation: 'update',
+            requestResourceData: { isAdmin: newAdminStatus }
+        });
+        errorEmitter.emit('permission-error', permissionError);
+    });
+  };
+
   const StatChangeIndicator = ({ change, good }: { change: number; good: 'up' | 'down' }) => {
     if (change === 0 || isNaN(change)) return null;
 
@@ -143,8 +165,9 @@ export function UserTable() {
   };
 
   const filteredUsers = users.filter(user => 
-    user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    (user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email?.toLowerCase().includes(searchTerm.toLowerCase())) &&
+    user.id !== currentUser?.uid // Exclude the current admin from the list
   );
 
   if (loading) {
@@ -187,7 +210,12 @@ export function UserTable() {
           <TableBody>
             {filteredUsers.length > 0 ? filteredUsers.map((user) => (
               <TableRow key={user.id} className={cn(statChanges[user.id] && "bg-muted/50")}>
-                <TableCell>{user.name}</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    {user.isAdmin && <ShieldCheck className="h-4 w-4 text-primary" title="Administrator"/>}
+                    {user.name}
+                  </div>
+                </TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
                   <Badge variant={user.status === 'Active' ? 'default' : 'secondary'}>{user.status}</Badge>
@@ -215,7 +243,10 @@ export function UserTable() {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="inline-flex rounded-md shadow-sm">
-                      <Button variant="outline" size="sm" className="rounded-r-none" onClick={() => handleEdit(user)}>Edit</Button>
+                      <Button variant="outline" size="sm" className="rounded-none" onClick={() => handleEdit(user)}>Edit</Button>
+                      <Button variant="outline" size="sm" className="rounded-none" onClick={() => handleMakeAdmin(user)}>
+                        {user.isAdmin ? 'Revoke Admin' : 'Make Admin'}
+                      </Button>
                       <AlertDialog>
                       <AlertDialogTrigger asChild>
                           <Button variant="destructive" size="sm" className="rounded-l-none">Delete</Button>
@@ -265,3 +296,5 @@ export function UserTable() {
     </>
   );
 }
+
+    
