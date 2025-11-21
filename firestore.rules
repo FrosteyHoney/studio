@@ -1,9 +1,15 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // By default, deny all access. This is a secure starting point.
-    // You will need to add specific rules to allow your app to read or write data.
+    // This rule allows anyone to write to the 'test/connection' document.
+    // It's used by the "Test DB Connection" button to verify connectivity.
+    match /test/connection {
+      allow write: if true;
+    }
+
+    // By default, deny all other access. This is a secure starting point.
     match /{document=**} {
       allow read, write: if false;
     }
