@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/auth-provider";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -77,18 +77,21 @@ export function UserStatsCards() {
       if (doc.exists()) {
         setStats(doc.data() as UserStats);
       } else {
-        console.log("No such document!");
+        // This case can happen if the user document hasn't been created yet.
+        // We set default stats to avoid breaking the UI.
         setStats(defaultStats);
       }
       setLoading(false);
     },
     (serverError) => {
+        // Instead of throwing a blocking error, we just set default stats
+        // and let the FirebaseErrorListener show a non-blocking toast.
         const permissionError = new FirestorePermissionError({
             path: docRef.path,
             operation: 'get'
         });
         errorEmitter.emit('permission-error', permissionError);
-        setStats(defaultStats);
+        setStats(defaultStats); // Gracefully degrade
         setLoading(false);
     });
 
@@ -114,7 +117,19 @@ export function UserStatsCards() {
   }
 
   if (!stats) {
-    return <p>No stats available.</p>;
+     // This state will be hit if loading is false but stats are still null
+    return (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            <Card className="col-span-full">
+                <CardHeader>
+                    <CardTitle>Stats Unavailable</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-muted-foreground">Could not load user statistics. This may be due to a permissions issue.</p>
+                </CardContent>
+            </Card>
+        </div>
+    )
   }
   
   const calculateChange = (current: number, previous: number | undefined) => {
