@@ -4,10 +4,35 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // WARNING: Insecure rule. Allows public access.
-    // This is for debugging purposes only.
-    match /{document=**} {
-      allow read, write: if true;
+    // Helper function to check if a user is an admin
+    function isAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    // Users can only read/update their own profile.
+    // They can create their own document upon signup.
+    match /users/{userId} {
+      allow read, update: if request.auth.uid == userId;
+      allow create: if request.auth.uid == userId && request.resource.data.id == userId;
+      // Deleting users should be done via a server-side function, not directly by clients.
+      allow delete: if false;
+
+      // Users can access their own stat history
+      match /statHistory/{historyId} {
+        allow read, create: if request.auth.uid == userId;
+        allow update, delete: if false; // History should be immutable
+      }
+    }
+
+    // Menu can be read by any authenticated user, but only modified by an admin.
+    match /menu/{mealId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+    
+    // Meal plans can only be managed by the user themselves or by an admin.
+    match /mealPlans/{userId} {
+        allow read, write: if request.auth.uid == userId || isAdmin();
     }
   }
 }
