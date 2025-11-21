@@ -19,24 +19,26 @@ service cloud.firestore {
       
       // A user can get their own document.
       allow get: if isOwner(userId);
+
       // A user can create and update their own document.
       allow create, update: if isOwner(userId);
     }
     
     // Rules for user stat history
     match /users/{userId}/statHistory/{historyId} {
-        // A user can read/list their own history, admins can read anyone's
-        allow get, list: if isOwner(userId) || isAdmin();
-        // Admins and the user can create history entries.
-        allow create: if isOwner(userId) || isAdmin();
-        // Only admins can update or delete.
-        allow update, delete: if isAdmin();
+        // A user can read/list their own history
+        allow get, list: if isOwner(userId);
+        // Admins can read/write anyone's history
+        allow read, write: if isAdmin();
+        // A user can create their own history entries
+        allow create: if isOwner(userId);
     }
 
     // Rules for the 'menu' collection
     match /menu/{mealId} {
-        // Any authenticated user can read an individual meal. Admins can do anything.
+        // Any authenticated user can read an individual meal.
         allow get: if request.auth != null;
+        // Only admins can modify the menu
         allow list, create, update, delete: if isAdmin();
     }
 
