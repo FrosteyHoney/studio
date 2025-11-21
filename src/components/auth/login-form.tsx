@@ -77,6 +77,7 @@ export function LoginForm() {
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 
+      // Check if user document exists, if not, create it.
       const userDocRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userDocRef);
 
@@ -97,13 +98,19 @@ export function LoginForm() {
             prevBodyFat: 0,
             prevMuscleMass: 0,
         });
+        toast({
+          title: "Profile Initialized",
+          description: "Your user profile has been created in the database.",
+        });
+      } else {
+         toast({
+          title: "Login Successful",
+          description: "Welcome back!",
+        });
       }
-
-      toast({
-        title: "Login Successful",
-        description: "Welcome back!",
-      });
+      
       router.push("/dashboard");
+
     } catch (error: any) {
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
          toast({
