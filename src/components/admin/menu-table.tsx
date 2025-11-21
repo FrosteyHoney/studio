@@ -95,7 +95,7 @@ const newMenuData = [
     { name: "Chicken & Avo Wrap", price: 85, calories: 480, description: "A healthy chicken and avo wrap.", ingredients: "Chicken, avocado, wrap", image: "https://placehold.co/400x300/D36B36/FFFFFF?text=Macro+Meal" },
     // Breakfast
     { name: "Poached Egg on Greens", price: 60, calories: 250, description: "Two poached eggs on a bed of greens.", ingredients: "Eggs, kale, red onion, cottage cheese", image: "https://placehold.co/400x300/F7CAC9/333333?text=Breakfast" },
-    { name: "Overnight Oats with Berries", price: 40, calories: 300, description: "Healthy and convenient overnight oats.", ingredients: "Oats, chia seeds, yoghurt, berries", image: "https://placehold.co_400x300/F7CAC9/333333?text=Breakfast" },
+    { name: "Overnight Oats with Berries", price: 40, calories: 300, description: "Healthy and convenient overnight oats.", ingredients: "Oats, chia seeds, yoghurt, berries", image: "https://placehold.co/400x300/F7CAC9/333333?text=Breakfast" },
 ];
 
 
@@ -323,4 +323,5 @@ export function MenuTable() {
   );
 }
 
+    
     
