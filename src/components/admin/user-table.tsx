@@ -188,8 +188,7 @@ export function UserTable() {
 
   const filteredUsers = users.filter(user => 
     (user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email?.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    user.id !== currentUser?.uid // Exclude the current admin from the list
+    user.email?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   if (loading) {
@@ -231,12 +230,13 @@ export function UserTable() {
           </TableHeader>
           <TableBody>
             {filteredUsers.length > 0 ? filteredUsers.map((user) => (
-              <TableRow key={user.id} className={cn(statChanges[user.id] && "bg-muted/50")}>
+              <TableRow key={user.id} className={cn(statChanges[user.id] && "bg-muted/50", user.id === currentUser?.uid && "bg-primary/10")}>
                 <TableCell>
                   <div className="flex items-center gap-2">
                     {user.isAdmin && <ShieldCheck className="h-4 w-4 text-primary" title="Administrator"/>}
                     {user.isTrainer && <Dumbbell className="h-4 w-4 text-green-500" title="Trainer"/>}
                     {user.name}
+                     {user.id === currentUser?.uid && <Badge variant="secondary">You</Badge>}
                   </div>
                 </TableCell>
                 <TableCell>{user.email}</TableCell>
@@ -279,7 +279,7 @@ export function UserTable() {
                       )}
                       <AlertDialog>
                       <AlertDialogTrigger asChild>
-                          <Button variant="destructive" size="sm" className={cn("rounded-l-none", !isSuperAdmin && "rounded-r-md")}>Delete</Button>
+                          <Button variant="destructive" size="sm" className={cn("rounded-l-none", !isSuperAdmin && "rounded-r-md")} disabled={user.id === currentUser?.uid}>Delete</Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                           <AlertDialogHeader>
@@ -326,5 +326,3 @@ export function UserTable() {
     </>
   );
 }
-
-    
