@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
+import { UpdatePasswordForm } from "@/components/dashboard/update-password-form";
 
 export default function DashboardSettingsPage() {
   const [showCalories, setShowCalories] = useState(true);
@@ -19,7 +20,7 @@ export default function DashboardSettingsPage() {
   }
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
+    <div className="flex-1 space-y-6 p-8 pt-6">
       <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
       <Card>
         <CardHeader>
@@ -42,6 +43,17 @@ export default function DashboardSettingsPage() {
               onCheckedChange={handleToggleCalories}
             />
           </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Security</CardTitle>
+          <CardDescription>
+            Change your account password.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <UpdatePasswordForm />
         </CardContent>
       </Card>
     </div>
