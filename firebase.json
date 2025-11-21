@@ -2,7 +2,7 @@
   "hosting": [
     {
       "target": "committedbodies",
-      "source": ".",
+      "public": "public",
       "ignore": [
         "firebase.json",
         "**/.*",
