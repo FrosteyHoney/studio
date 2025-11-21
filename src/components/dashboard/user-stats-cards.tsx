@@ -24,6 +24,18 @@ interface UserStats {
   prevMuscleMass?: number;
 }
 
+const defaultStats: UserStats = {
+  height: 0,
+  weight: 0,
+  bmi: 0,
+  bodyFat: 0,
+  muscleMass: 0,
+  prevWeight: 0,
+  prevBmi: 0,
+  prevBodyFat: 0,
+  prevMuscleMass: 0,
+};
+
 const StatChangeIndicator = ({ change, good }: { change: number; good: "up" | "down" }) => {
   if (change === 0 || isNaN(change) || !isFinite(change)) return null;
 
@@ -54,7 +66,11 @@ export function UserStatsCards() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+        setLoading(false);
+        setStats(defaultStats);
+        return;
+    };
 
     const docRef = doc(db, "users", user.uid);
     const unsubscribe = onSnapshot(docRef, (doc) => {
@@ -62,6 +78,7 @@ export function UserStatsCards() {
         setStats(doc.data() as UserStats);
       } else {
         console.log("No such document!");
+        setStats(defaultStats);
       }
       setLoading(false);
     },
@@ -71,6 +88,7 @@ export function UserStatsCards() {
             operation: 'get'
         });
         errorEmitter.emit('permission-error', permissionError);
+        setStats(defaultStats);
         setLoading(false);
     });
 

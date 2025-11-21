@@ -83,6 +83,7 @@ export function DailyMealDisplay() {
             } catch (e) {
                 console.error("Error fetching today's meal: ", e);
                 setError("Could not load your meal for today. Please try again later.");
+                setTodaysMeals({});
             } finally {
                 setLoading(false);
             }

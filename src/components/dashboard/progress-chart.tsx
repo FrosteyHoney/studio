@@ -25,7 +25,11 @@ export function ProgressChart() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!user) return
+    if (!user) {
+        setLoading(false);
+        setData([]);
+        return;
+    }
 
     const historyRef = collection(db, "users", user.uid, "statHistory")
     const q = query(historyRef, orderBy("date", "desc"), limit(5))
@@ -49,6 +53,7 @@ export function ProgressChart() {
             operation: 'list'
         });
         errorEmitter.emit('permission-error', permissionError);
+        setData([]); // Set data to empty array on error
         setLoading(false);
     });
 

@@ -81,6 +81,7 @@ export function MenuTable() {
             operation: 'list'
         });
         errorEmitter.emit('permission-error', permissionError);
+        setMeals([]);
     }).finally(() => {
         setLoading(false);
     });

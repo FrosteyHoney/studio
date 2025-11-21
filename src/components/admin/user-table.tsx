@@ -79,6 +79,7 @@ export function UserTable() {
             operation: 'list',
         });
         errorEmitter.emit('permission-error', permissionError);
+        setUsers([]); // Set users to empty array on error
     }).finally(() => {
         setLoading(false);
     });

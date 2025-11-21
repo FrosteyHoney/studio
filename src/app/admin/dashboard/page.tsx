@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +24,7 @@ export default function AdminDashboardPage() {
                         operation: 'list'
                     });
                     errorEmitter.emit('permission-error', permissionError);
+                    setUserCount(0);
                     // Return an empty snapshot to avoid crashing the app
                     return { size: 0, docs: [] };
                 });
