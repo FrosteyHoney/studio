@@ -39,6 +39,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (user) {
+      // Temporary hardcoded admin for initial setup
+      if (user.email === 'myburghjobro@gmail.com') {
+        setIsAdmin(true);
+        setLoading(false);
+        return;
+      }
+      
       const userDocRef = doc(db, 'users', user.uid);
       const unsubscribeFirestore = onSnapshot(userDocRef, (doc) => {
         if (doc.exists() && doc.data().isAdmin) {
