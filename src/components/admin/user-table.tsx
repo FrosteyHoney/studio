@@ -279,7 +279,7 @@ export function UserTable() {
                       )}
                       <AlertDialog>
                       <AlertDialogTrigger asChild>
-                          <Button variant="destructive" size="sm" className={cn("rounded-l-none", !isSuperAdmin && "rounded-r-md")} disabled={user.id === currentUser?.uid}>Delete</Button>
+                          <Button variant="destructive" size="sm" className="rounded-r-md" disabled={user.id === currentUser?.uid}>Delete</Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                           <AlertDialogHeader>
