@@ -8,7 +8,7 @@ import { db } from "@/lib/firebase";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
-import { Utensils, Salad, Beef, VenetianMask, UtensilsCrossed, CakeSlice, Cupcake, Coffee, Martini, Soup, Sandwich, Fish, AppWindow, Apple } from "lucide-react";
+import { Utensils, Salad, Beef, UtensilsCrossed, CakeSlice, Coffee, Martini, Soup, Sandwich, Fish, Apple } from "lucide-react";
 
 
 interface Meal {
@@ -101,8 +101,7 @@ export function DailyMealDisplay() {
         if (lowerName.includes('burger') || lowerName.includes('steak')) return <Beef className="h-16 w-16 text-muted-foreground" />;
         if (lowerName.includes('pasta') || lowerName.includes('fettuccine') || lowerName.includes('noodles')) return <UtensilsCrossed className="h-16 w-16 text-muted-foreground" />;
         if (lowerName.includes('keto') || lowerName.includes('hake')) return <Fish className="h-16 w-16 text-muted-foreground" />;
-        if (lowerName.includes('brownie') || lowerName.includes('cheesecake') || lowerName.includes('sweet')) return <CakeSlice className="h-16 w-16 text-muted-foreground" />;
-        if (lowerName.includes('muffin')) return <Cupcake className="h-16 w-16 text-muted-foreground" />;
+        if (lowerName.includes('brownie') || lowerName.includes('cheesecake') || lowerName.includes('muffin') || lowerName.includes('sweet')) return <CakeSlice className="h-16 w-16 text-muted-foreground" />;
         if (lowerName.includes('coffee') || lowerName.includes('tea') || lowerName.includes('latte')) return <Coffee className="h-16 w-16 text-muted-foreground" />;
         if (lowerName.includes('smoothie') || lowerName.includes('crusher') || lowerName.includes('drink')) return <Martini className="h-16 w-16 text-muted-foreground" />;
         if (lowerName.includes('breakfast') || lowerName.includes('egg') || lowerName.includes('oats')) return <Soup className="h-16 w-16 text-muted-foreground" />;
@@ -190,3 +189,7 @@ export function DailyMealDisplay() {
         </div>
     );
 }
+
+    
+
+    

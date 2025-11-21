@@ -30,7 +30,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Badge } from "../ui/badge";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { RefreshCw, Loader2, Utensils, Salad, Beef, VenetianMask, UtensilsCrossed, CakeSlice, Cupcake, Coffee, Martini, Soup, Sandwich, Fish, AppWindow, Apple } from "lucide-react";
+import { RefreshCw, Loader2, Utensils, Salad, Beef, UtensilsCrossed, CakeSlice, Coffee, Martini, Soup, Sandwich, Fish, Apple } from "lucide-react";
 
 const newMenuData = [
     // Salads
@@ -199,8 +199,7 @@ export function MenuTable() {
     if (lowerName.includes('burger') || lowerName.includes('steak')) return <Beef className="h-10 w-10 text-muted-foreground" />;
     if (lowerName.includes('pasta') || lowerName.includes('fettuccine') || lowerName.includes('noodles')) return <UtensilsCrossed className="h-10 w-10 text-muted-foreground" />;
     if (lowerName.includes('keto') || lowerName.includes('hake')) return <Fish className="h-10 w-10 text-muted-foreground" />;
-    if (lowerName.includes('brownie') || lowerName.includes('cheesecake') || lowerName.includes('sweet')) return <CakeSlice className="h-10 w-10 text-muted-foreground" />;
-    if (lowerName.includes('muffin')) return <Cupcake className="h-10 w-10 text-muted-foreground" />;
+    if (lowerName.includes('brownie') || lowerName.includes('cheesecake') || lowerName.includes('muffin') || lowerName.includes('sweet')) return <CakeSlice className="h-10 w-10 text-muted-foreground" />;
     if (lowerName.includes('coffee') || lowerName.includes('tea') || lowerName.includes('latte')) return <Coffee className="h-10 w-10 text-muted-foreground" />;
     if (lowerName.includes('smoothie') || lowerName.includes('crusher') || lowerName.includes('drink')) return <Martini className="h-10 w-10 text-muted-foreground" />;
     if (lowerName.includes('breakfast') || lowerName.includes('egg') || lowerName.includes('oats')) return <Soup className="h-10 w-10 text-muted-foreground" />;
@@ -332,3 +331,5 @@ export function MenuTable() {
     </>
   );
 }
+
+    
