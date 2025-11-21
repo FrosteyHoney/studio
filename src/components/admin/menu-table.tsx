@@ -67,34 +67,69 @@ const newMenuData = [
     { name: "Blueberry Muffin", price: 35, calories: 250, description: "A delicious blueberry muffin.", ingredients: "Blueberry, flour, sugar", category: "Muffins" },
     { name: "Chocolate Chip Muffin", price: 35, calories: 300, description: "A delicious chocolate chip muffin.", ingredients: "Chocolate chips, flour, sugar", category: "Muffins" },
     { name: "Cheesecake", price: 60, calories: 350, description: "A slice of classic cheesecake.", ingredients: "Cream cheese, sugar, crust", category: "Muffins" },
-    // Drinks
-    { name: "Bullet Coffee", price: 50, calories: 200, description: "Energy booster to start your day.", ingredients: "Coffee, butter, MCT oil", category: "Drinks" },
-    { name: "Iced Coffee", price: 35, calories: 120, description: "Refreshing iced coffee.", ingredients: "Coffee, milk, ice", category: "Drinks" },
-    { name: "Detox Tea", price: 40, calories: 10, description: "A cleansing detox tea.", ingredients: "Herbal tea mix", category: "Drinks" },
-    { name: "Chai Tea with Honey", price: 45, calories: 120, description: "Spiced chai tea with a touch of honey.", ingredients: "Chai, milk, honey", category: "Drinks" },
-    { name: "Honey Ginger Tea", price: 35, calories: 80, description: "Soothing honey ginger tea.", ingredients: "Ginger, honey, hot water", category: "Drinks" },
-    { name: "Digestion & Fat Loss Tea", price: 45, calories: 10, description: "A special blend for digestion.", ingredients: "Herbal tea mix", category: "Drinks" },
-    { name: "Rooibos Tea", price: 25, calories: 5, description: "Classic South African rooibos tea.", ingredients: "Rooibos tea leaves", category: "Drinks" },
-    { name: "Golden Milk Tea", price: 45, calories: 150, description: "Turmeric and spice tea.", ingredients: "Turmeric, milk, spices", category: "Drinks" },
-    { name: "Lemon Tea", price: 15, calories: 15, description: "Simple and refreshing lemon tea.", ingredients: "Lemon, hot water", category: "Drinks" },
-    { name: "Water", price: 20, calories: 0, description: "Still or sparkling water.", ingredients: "Water", category: "Drinks" },
-    { name: "Switch Energy Drink", price: 15, calories: 110, description: "An energy boost.", ingredients: "Varies", category: "Drinks" },
+    // Alternative Coffees, Teas & Drinks
+    { name: "Bullet Coffee", price: 50, calories: 200, description: "Energy booster to start your day.", ingredients: "Coffee, butter, MCT oil", category: "Alternative Coffees, Teas & Drinks" },
+    { name: "Iced Coffee", price: 35, calories: 120, description: "Refreshing iced coffee.", ingredients: "Coffee, milk, ice", category: "Alternative Coffees, Teas & Drinks" },
+    { name: "Detox Tea", price: 40, calories: 10, description: "A cleansing detox tea.", ingredients: "Herbal tea mix", category: "Alternative Coffees, Teas & Drinks" },
+    { name: "Chai Tea with Honey", price: 45, calories: 120, description: "Spiced chai tea with a touch of honey.", ingredients: "Chai, milk, honey", category: "Alternative Coffees, Teas & Drinks" },
+    { name: "Honey Ginger Tea", price: 35, calories: 80, description: "Soothing honey ginger tea.", ingredients: "Ginger, honey, hot water", category: "Alternative Coffees, Teas & Drinks" },
+    { name: "Digestion & Fat Loss Tea", price: 45, calories: 10, description: "A special blend for digestion.", ingredients: "Herbal tea mix", category: "Alternative Coffees, Teas & Drinks" },
+    { name: "Rooibos Tea", price: 25, calories: 5, description: "Classic South African rooibos tea.", ingredients: "Rooibos tea leaves", category: "Alternative Coffees, Teas & Drinks" },
+    { name: "Golden Milk Tea", price: 45, calories: 150, description: "Turmeric and spice tea.", ingredients: "Turmeric, milk, spices", category: "Alternative Coffees, Teas & Drinks" },
+    { name: "Lemon Tea", price: 15, calories: 15, description: "Simple and refreshing lemon tea.", ingredients: "Lemon, hot water", category: "Alternative Coffees, Teas & Drinks" },
+    { name: "Water", price: 20, calories: 0, description: "Still or sparkling water.", ingredients: "Water", category: "Alternative Coffees, Teas & Drinks" },
+    { name: "Switch Energy Drink", price: 15, calories: 110, description: "An energy boost.", ingredients: "Varies", category: "Alternative Coffees, Teas & Drinks" },
     // Smoothies & Lattes
     { name: "Peanut Butter Smoothie", price: 60, calories: 350, description: "Creamy peanut butter smoothie.", ingredients: "Peanut butter, milk, banana", category: "Smoothies & Lattes" },
+    { name: "Iced Coffee Smoothie", price: 60, calories: 300, description: "A refreshing iced coffee smoothie.", ingredients: "Coffee, milk, ice, protein", category: "Smoothies & Lattes" },
     { name: "Hazelnut Latte", price: 60, calories: 280, description: "A warm hazelnut latte.", ingredients: "Espresso, milk, hazelnut syrup", category: "Smoothies & Lattes" },
+    { name: "Spicy Chai Latte", price: 60, calories: 260, description: "A spicy chai latte.", ingredients: "Chai, milk, spices", category: "Smoothies & Lattes" },
+    { name: "Belgian Chocolate Latte", price: 60, calories: 320, description: "A rich Belgian chocolate latte.", ingredients: "Chocolate, milk, espresso", category: "Smoothies & Lattes" },
+    { name: "Salted Caramel Latte", price: 60, calories: 330, description: "A sweet and salty caramel latte.", ingredients: "Caramel, salt, milk, espresso", category: "Smoothies & Lattes" },
+    { name: "Milk Tart Smoothie", price: 60, calories: 300, description: "A classic South African milk tart smoothie.", ingredients: "Milk, cinnamon, custard", category: "Smoothies & Lattes" },
+    { name: "Cookies & Cream Smoothie", price: 60, calories: 350, description: "A delicious cookies and cream smoothie.", ingredients: "Cookies, cream, milk", category: "Smoothies & Lattes" },
+    { name: "Bar-One Smoothie", price: 60, calories: 380, description: "A decadent Bar-One chocolate smoothie.", ingredients: "Bar-One, milk, ice cream", category: "Smoothies & Lattes" },
     // Crushers
     { name: "Strawberry Crusher", price: 50, calories: 180, description: "A refreshing strawberry crusher.", ingredients: "Strawberry, ice", category: "Crushers" },
+    { name: "Blueberry Crusher", price: 50, calories: 180, description: "A refreshing blueberry crusher.", ingredients: "Blueberry, ice", category: "Crushers" },
+    { name: "Mixed Berry Crusher", price: 50, calories: 180, description: "A refreshing mixed berry crusher.", ingredients: "Mixed berries, ice", category: "Crushers" },
+    { name: "Mango Crusher", price: 50, calories: 180, description: "A refreshing mango crusher.", ingredients: "Mango, ice", category: "Crushers" },
+    { name: "Passion Fruit Crusher", price: 50, calories: 180, description: "A refreshing passion fruit crusher.", ingredients: "Passion fruit, ice", category: "Crushers" },
     // High Protein Breakfast
-    { name: "High Protein Breakfast", price: 90, calories: 500, description: "A breakfast packed with protein.", ingredients: "3 Eggs, Spinach, Cottage Cheese, Bacon, Cucumber, Tomato, Sourdough", category: "Breakfast" },
+    { name: "High Protein Breakfast", price: 90, calories: 500, description: "A breakfast packed with protein.", ingredients: "3 Eggs, Spinach, Cottage Cheese, Bacon, Cucumber, Tomato, Sourdough", category: "High Protein Breakfast" },
     // Open Sandwiches
     { name: "Salmon, Avo & Egg Sandwich", price: 110, calories: 480, description: "Open sandwich with salmon, avo and egg.", ingredients: "Salmon, avocado, egg, pesto, bread", category: "Open Sandwiches" },
     { name: "Chicken Mayonnaise Sandwich", price: 65, calories: 420, description: "Classic chicken mayo open sandwich.", ingredients: "Chicken, mayonnaise, bread", category: "Open Sandwiches" },
+    { name: "Salmon, Egg & Cheese Sandwich", price: 110, calories: 500, description: "An open sandwich with salmon, egg, and cheese.", ingredients: "Salmon, egg, cheese, bread", category: "Open Sandwiches" },
+    { name: "Bacon & Egg Cheese Sandwich", price: 65, calories: 450, description: "An open sandwich with bacon, egg, and cheese.", ingredients: "Bacon, egg, cheese, bread", category: "Open Sandwiches" },
+    { name: "Bacon, Avo & Egg Sandwich", price: 70, calories: 470, description: "An open sandwich with bacon, avo, and egg.", ingredients: "Bacon, avo, egg, bread", category: "Open Sandwiches" },
+    { name: "Tuna Mayonnaise Sandwich", price: 70, calories: 430, description: "A classic tuna mayonnaise open sandwich.", ingredients: "Tuna, mayonnaise, bread", category: "Open Sandwiches" },
+    { name: "Egg Salad Sandwich", price: 55, calories: 350, description: "An open sandwich with egg salad.", ingredients: "Egg, mayonnaise, bread", category: "Open Sandwiches" },
+    { name: "Ham & Cheese Sandwich", price: 55, calories: 400, description: "A classic ham and cheese open sandwich.", ingredients: "Ham, cheese, bread", category: "Open Sandwiches" },
     // Macro Conscious
     { name: "Chicken Strips with Avocado", price: 85, calories: 450, description: "Macro-friendly chicken strips.", ingredients: "Chicken, avocado, red onion, feta", category: "Macro Conscious" },
     { name: "Chicken & Avo Wrap", price: 85, calories: 480, description: "A healthy chicken and avo wrap.", ingredients: "Chicken, avocado, wrap", category: "Macro Conscious" },
+    { name: "Chicken Stir-Fry with Basmati Rice", price: 85, calories: 500, description: "A classic chicken stir-fry with rice.", ingredients: "Chicken, vegetables, rice, soy sauce", category: "Macro Conscious" },
+    { name: "Chicken, Carbs & Veg", price: 85, calories: 480, description: "A balanced meal of chicken, carbs, and veggies.", ingredients: "Chicken, sweet potato, broccoli", category: "Macro Conscious" },
+    { name: "Chicken Coconut Curry", price: 85, calories: 500, description: "A fragrant chicken coconut curry.", ingredients: "Chicken, coconut milk, curry spices, rice", category: "Macro Conscious" },
+    { name: "Chicken Strips & Chips with Dip", price: 85, calories: 550, description: "Crispy chicken strips with chips and a dip.", ingredients: "Chicken, potatoes, dip", category: "Macro Conscious" },
+    { name: "Chickpea Coconut Curry", price: 85, calories: 450, description: "A vegetarian chickpea coconut curry.", ingredients: "Chickpeas, coconut milk, curry spices, rice", category: "Macro Conscious" },
+    { name: "Beef, Feta & Avo Wrap", price: 95, calories: 520, description: "A wrap with beef, feta, and avocado.", ingredients: "Beef, feta, avocado, wrap", category: "Macro Conscious" },
+    { name: "Mince Wrap (Mexican)", price: 95, calories: 540, description: "A Mexican-style mince wrap.", ingredients: "Mince, beans, salsa, wrap", category: "Macro Conscious" },
+    { name: "Steak, Egg & Chips", price: 110, calories: 650, description: "A classic steak, egg, and chips.", ingredients: "Steak, egg, chips", category: "Macro Conscious" },
     // Breakfast
     { name: "Poached Egg on Greens", price: 60, calories: 250, description: "Two poached eggs on a bed of greens.", ingredients: "Eggs, kale, red onion, cottage cheese", category: "Breakfast" },
     { name: "Overnight Oats with Berries", price: 40, calories: 300, description: "Healthy and convenient overnight oats.", ingredients: "Oats, chia seeds, yoghurt, berries", category: "Breakfast"},
+    { name: "Breakfast Pizza (Egg Base)", price: 65, calories: 450, description: "A low-carb breakfast pizza with an egg base.", ingredients: "Egg, bacon/ham/mince, mushrooms, cheese", category: "Breakfast" },
+    { name: "Triple Delight Omelette", price: 65, calories: 400, description: "An omelette with bacon or ham, cheese, tomato and onion.", ingredients: "Eggs, bacon/ham, cheese, tomato, onion", category: "Breakfast" },
+    { name: "Powerhouse Omelette", price: 70, calories: 450, description: "A large omelette packed with protein.", ingredients: "4 Eggs, bacon, spinach, herbs, cheese", category: "Breakfast" },
+    { name: "Breakfast Beast", price: 110, calories: 700, description: "For the hungry! A massive breakfast plate.", ingredients: "3 Eggs, 3 Bacon, 1 Cheese Griller, Chips, Spinach, Sourdough", category: "Breakfast" },
+    { name: "English Breakfast", price: 55, calories: 350, description: "A classic English breakfast.", ingredients: "2 Eggs, Bacon, Grilled Tomato, Sourdough", category: "Breakfast" },
+    { name: "Heavy Breakfast", price: 90, calories: 500, description: "A bigger take on the classic breakfast.", ingredients: "3 Eggs, 2 Bacon, Grilled Tomato, Sourdough, 1 Cheese Griller", category: "Breakfast" },
+    { name: "Hash Brown Breakfast", price: 85, calories: 480, description: "A breakfast focused on hash browns.", ingredients: "2 Bacon, 2 Hash Browns, 3 Cheese Balls", category: "Breakfast" },
+    { name: "Eggs Benedict with Ham or Bacon", price: 89, calories: 450, description: "Classic Eggs Benedict.", ingredients: "Eggs, muffin, hollandaise, ham/bacon", category: "Breakfast" },
+    { name: "Eggs Benedict with Salmon", price: 125, calories: 520, description: "Eggs Benedict with salmon.", ingredients: "Eggs, muffin, hollandaise, salmon", category: "Breakfast" },
+    { name: "Potato Rosti", price: 75, calories: 400, description: "A crispy potato rosti breakfast.", ingredients: "Potato, cheese, egg, viennas, bacon, toast", category: "Breakfast" },
 ];
 
 export function MenuTable() {
@@ -275,7 +310,14 @@ export function MenuTable() {
         <Button onClick={handleAddNew}>Add New Meal</Button>
       </div>
       <div className="space-y-8 mt-4">
-        {Object.entries(categorizedMeals).map(([category, categoryMeals]) => (
+        {Object.entries(categorizedMeals).sort(([catA], [catB]) => {
+            const order = newMenuData.map(item => item.category);
+            const indexA = order.indexOf(catA);
+            const indexB = order.indexOf(catB);
+            if (indexA === -1) return 1;
+            if (indexB === -1) return -1;
+            return indexA - indexB;
+        }).map(([category, categoryMeals]) => (
             <div key={category}>
                 <h2 className="text-2xl font-bold tracking-tight mb-4">{category}</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -347,3 +389,5 @@ export function MenuTable() {
     </>
   );
 }
+
+    

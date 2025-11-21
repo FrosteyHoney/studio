@@ -42,12 +42,13 @@ const categories = [
     "Keto Meals",
     "Sweet Tooth",
     "Muffins",
-    "Drinks",
+    "Alternative Coffees, Teas & Drinks",
     "Smoothies & Lattes",
     "Crushers",
-    "Breakfast",
+    "High Protein Breakfast",
     "Open Sandwiches",
     "Macro Conscious",
+    "Breakfast",
     "Uncategorized",
 ]
 
@@ -225,3 +226,5 @@ export function MenuForm({ setOpen, initialData, onMealUpdated }: MenuFormProps)
     </Form>
   );
 }
+
+    
