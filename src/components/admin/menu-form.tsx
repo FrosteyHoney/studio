@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -20,6 +21,7 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const formSchema = z.object({
   name: z.string().min(3, { message: "Name must be at least 3 characters." }),
@@ -27,10 +29,27 @@ const formSchema = z.object({
   calories: z.coerce.number().min(0, { message: "Calories must be a positive number." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
   ingredients: z.string().min(3, { message: "Ingredients must be at least 3 characters." }),
+  category: z.string().min(3, { message: "Category is required." }),
   image: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
 });
 
 export type MenuItem = z.infer<typeof formSchema> & { id: string };
+
+const categories = [
+    "Salads",
+    "Burgers",
+    "Pastas",
+    "Keto Meals",
+    "Sweet Tooth",
+    "Muffins",
+    "Drinks",
+    "Smoothies & Lattes",
+    "Crushers",
+    "Breakfast",
+    "Open Sandwiches",
+    "Macro Conscious",
+    "Uncategorized",
+]
 
 interface MenuFormProps {
     setOpen: Dispatch<SetStateAction<boolean>>;
@@ -48,6 +67,7 @@ export function MenuForm({ setOpen, initialData, onMealUpdated }: MenuFormProps)
       calories: 0,
       description: "",
       ingredients: "",
+      category: "Uncategorized",
       image: "",
     },
   });
@@ -158,6 +178,28 @@ export function MenuForm({ setOpen, initialData, onMealUpdated }: MenuFormProps)
               <FormControl>
                 <Input placeholder="e.g., Chicken, Quinoa, Spinach" {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                        {categories.map(category => (
+                            <SelectItem key={category} value={category}>{category}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
               <FormMessage />
             </FormItem>
           )}

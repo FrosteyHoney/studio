@@ -34,69 +34,68 @@ import { RefreshCw, Loader2, Utensils, Salad, Beef, UtensilsCrossed, CakeSlice, 
 
 const newMenuData = [
     // Salads
-    { name: "Broccoli Salad", price: 60, calories: 150, description: "A refreshing broccoli salad.", ingredients: "Broccoli, dressing" },
-    { name: "Hummus with Carrot & Cucumber", price: 50, calories: 180, description: "Creamy hummus with fresh vegetable sticks.", ingredients: "Hummus, Carrots, Cucumber" },
-    { name: "Chicken Salad", price: 85, calories: 350, description: "Classic chicken salad.", ingredients: "Chicken, lettuce, tomato" },
-    { name: "Tuna Salad", price: 80, calories: 320, description: "A light and tasty tuna salad.", ingredients: "Tuna, lettuce, cucumber" },
+    { name: "Broccoli Salad", price: 60, calories: 150, description: "A refreshing broccoli salad.", ingredients: "Broccoli, dressing", category: "Salads" },
+    { name: "Hummus with Carrot & Cucumber", price: 50, calories: 180, description: "Creamy hummus with fresh vegetable sticks.", ingredients: "Hummus, Carrots, Cucumber", category: "Salads" },
+    { name: "Chicken Salad", price: 85, calories: 350, description: "Classic chicken salad.", ingredients: "Chicken, lettuce, tomato", category: "Salads" },
+    { name: "Tuna Salad", price: 80, calories: 320, description: "A light and tasty tuna salad.", ingredients: "Tuna, lettuce, cucumber", category: "Salads" },
     // Burgers
-    { name: "Beef Burger", price: 85, calories: 650, description: "A juicy beef burger served with chips.", ingredients: "Beef patty, bun, chips" },
-    { name: "Chicken Burger", price: 85, calories: 600, description: "A grilled chicken burger served with chips.", ingredients: "Chicken breast, bun, chips" },
-    { name: "Mushroom Burger", price: 95, calories: 550, description: "A hearty mushroom burger served with chips.", ingredients: "Mushroom, bun, chips" },
-    { name: "Cheeseburger", price: 95, calories: 700, description: "A classic cheeseburger served with chips.", ingredients: "Beef patty, cheese, bun, chips" },
-    { name: "Sloppy Joe", price: 95, calories: 720, description: "A delicious and messy sloppy joe served with chips.", ingredients: "Mince, bun, chips" },
+    { name: "Beef Burger", price: 85, calories: 650, description: "A juicy beef burger served with chips.", ingredients: "Beef patty, bun, chips", category: "Burgers" },
+    { name: "Chicken Burger", price: 85, calories: 600, description: "A grilled chicken burger served with chips.", ingredients: "Chicken breast, bun, chips", category: "Burgers" },
+    { name: "Mushroom Burger", price: 95, calories: 550, description: "A hearty mushroom burger served with chips.", ingredients: "Mushroom, bun, chips", category: "Burgers" },
+    { name: "Cheeseburger", price: 95, calories: 700, description: "A classic cheeseburger served with chips.", ingredients: "Beef patty, cheese, bun, chips", category: "Burgers" },
+    { name: "Sloppy Joe", price: 95, calories: 720, description: "A delicious and messy sloppy joe served with chips.", ingredients: "Mince, bun, chips", category: "Burgers" },
     // Pastas
-    { name: "Spaghetti Bolognese with Egg Noodles", price: 75, calories: 450, description: "Classic spaghetti bolognese with egg noodles.", ingredients: "Mince, tomato sauce, noodles" },
-    { name: "Salmon Alfredo", price: 95, calories: 600, description: "Creamy salmon alfredo pasta.", ingredients: "Salmon, cream sauce, pasta" },
-    { name: "Chicken & Mushroom Fettuccine", price: 95, calories: 550, description: "Chicken and mushroom in a creamy fettuccine.", ingredients: "Chicken, mushroom, cream, pasta" },
+    { name: "Spaghetti Bolognese with Egg Noodles", price: 75, calories: 450, description: "Classic spaghetti bolognese with egg noodles.", ingredients: "Mince, tomato sauce, noodles", category: "Pastas" },
+    { name: "Salmon Alfredo", price: 95, calories: 600, description: "Creamy salmon alfredo pasta.", ingredients: "Salmon, cream sauce, pasta", category: "Pastas" },
+    { name: "Chicken & Mushroom Fettuccine", price: 95, calories: 550, description: "Chicken and mushroom in a creamy fettuccine.", ingredients: "Chicken, mushroom, cream, pasta", category: "Pastas" },
     // Keto Meals
-    { name: "Salmon & Avo Salad", price: 105, calories: 420, description: "A healthy keto salmon and avocado salad.", ingredients: "Salmon, avocado, greens" },
-    { name: "Steak & Broccoli", price: 110, calories: 500, description: "Grilled steak with a side of broccoli.", ingredients: "Steak, broccoli" },
-    { name: "Hake & Veggies", price: 90, calories: 350, description: "Grilled hake with mixed vegetables.", ingredients: "Hake, mixed veggies" },
-    { name: "Cheesy Hake with Salad", price: 95, calories: 400, description: "Hake with melted cheese, served with a side salad.", ingredients: "Hake, cheese, salad" },
+    { name: "Salmon & Avo Salad", price: 105, calories: 420, description: "A healthy keto salmon and avocado salad.", ingredients: "Salmon, avocado, greens", category: "Keto Meals" },
+    { name: "Steak & Broccoli", price: 110, calories: 500, description: "Grilled steak with a side of broccoli.", ingredients: "Steak, broccoli", category: "Keto Meals" },
+    { name: "Hake & Veggies", price: 90, calories: 350, description: "Grilled hake with mixed vegetables.", ingredients: "Hake, mixed veggies", category: "Keto Meals" },
+    { name: "Cheesy Hake with Salad", price: 95, calories: 400, description: "Hake with melted cheese, served with a side salad.", ingredients: "Hake, cheese, salad", category: "Keto Meals" },
     // Sweet Tooth
-    { name: "Protein Brownies (x2)", price: 45, calories: 220, description: "Delicious protein-packed brownies.", ingredients: "Protein powder, cocoa, eggs" },
-    { name: "Coconut Chia Granola Clusters (x2)", price: 50, calories: 250, description: "Crunchy granola clusters.", ingredients: "Oats, chia, coconut" },
-    { name: "Egg Muffins (x3)", price: 50, calories: 300, description: "Savory egg muffins.", ingredients: "Eggs, cheese, vegetables" },
-    { name: "Whey Protein Muffins", price: 55, calories: 280, description: "Muffins made with whey protein.", ingredients: "Whey protein, flour, eggs" },
+    { name: "Protein Brownies (x2)", price: 45, calories: 220, description: "Delicious protein-packed brownies.", ingredients: "Protein powder, cocoa, eggs", category: "Sweet Tooth" },
+    { name: "Coconut Chia Granola Clusters (x2)", price: 50, calories: 250, description: "Crunchy granola clusters.", ingredients: "Oats, chia, coconut", category: "Sweet Tooth" },
+    { name: "Egg Muffins (x3)", price: 50, calories: 300, description: "Savory egg muffins.", ingredients: "Eggs, cheese, vegetables", category: "Sweet Tooth" },
+    { name: "Whey Protein Muffins", price: 55, calories: 280, description: "Muffins made with whey protein.", ingredients: "Whey protein, flour, eggs", category: "Sweet Tooth" },
     // Muffins
-    { name: "Carrot Muffin", price: 35, calories: 280, description: "A delicious carrot muffin.", ingredients: "Carrot, flour, sugar" },
-    { name: "Chocolate Muffin", price: 35, calories: 300, description: "A delicious chocolate muffin.", ingredients: "Chocolate, flour, sugar" },
-    { name: "Lemon Poppy Muffin", price: 35, calories: 270, description: "A delicious lemon poppy seed muffin.", ingredients: "Lemon, poppy seeds, flour" },
-    { name: "Vanilla Muffin", price: 35, calories: 260, description: "A delicious vanilla muffin.", ingredients: "Vanilla, flour, sugar" },
-    { name: "Red Velvet Muffin", price: 35, calories: 290, description: "A delicious red velvet muffin.", ingredients: "Red velvet, flour, sugar" },
-    { name: "Blueberry Muffin", price: 35, calories: 250, description: "A delicious blueberry muffin.", ingredients: "Blueberry, flour, sugar" },
-    { name: "Chocolate Chip Muffin", price: 35, calories: 300, description: "A delicious chocolate chip muffin.", ingredients: "Chocolate chips, flour, sugar" },
-    { name: "Cheesecake", price: 60, calories: 350, description: "A slice of classic cheesecake.", ingredients: "Cream cheese, sugar, crust" },
+    { name: "Carrot Muffin", price: 35, calories: 280, description: "A delicious carrot muffin.", ingredients: "Carrot, flour, sugar", category: "Muffins" },
+    { name: "Chocolate Muffin", price: 35, calories: 300, description: "A delicious chocolate muffin.", ingredients: "Chocolate, flour, sugar", category: "Muffins" },
+    { name: "Lemon Poppy Muffin", price: 35, calories: 270, description: "A delicious lemon poppy seed muffin.", ingredients: "Lemon, poppy seeds, flour", category: "Muffins" },
+    { name: "Vanilla Muffin", price: 35, calories: 260, description: "A delicious vanilla muffin.", ingredients: "Vanilla, flour, sugar", category: "Muffins" },
+    { name: "Red Velvet Muffin", price: 35, calories: 290, description: "A delicious red velvet muffin.", ingredients: "Red velvet, flour, sugar", category: "Muffins" },
+    { name: "Blueberry Muffin", price: 35, calories: 250, description: "A delicious blueberry muffin.", ingredients: "Blueberry, flour, sugar", category: "Muffins" },
+    { name: "Chocolate Chip Muffin", price: 35, calories: 300, description: "A delicious chocolate chip muffin.", ingredients: "Chocolate chips, flour, sugar", category: "Muffins" },
+    { name: "Cheesecake", price: 60, calories: 350, description: "A slice of classic cheesecake.", ingredients: "Cream cheese, sugar, crust", category: "Muffins" },
     // Drinks
-    { name: "Bullet Coffee", price: 50, calories: 200, description: "Energy booster to start your day.", ingredients: "Coffee, butter, MCT oil" },
-    { name: "Iced Coffee", price: 35, calories: 120, description: "Refreshing iced coffee.", ingredients: "Coffee, milk, ice" },
-    { name: "Detox Tea", price: 40, calories: 10, description: "A cleansing detox tea.", ingredients: "Herbal tea mix" },
-    { name: "Chai Tea with Honey", price: 45, calories: 120, description: "Spiced chai tea with a touch of honey.", ingredients: "Chai, milk, honey" },
-    { name: "Honey Ginger Tea", price: 35, calories: 80, description: "Soothing honey ginger tea.", ingredients: "Ginger, honey, hot water" },
-    { name: "Digestion & Fat Loss Tea", price: 45, calories: 10, description: "A special blend for digestion.", ingredients: "Herbal tea mix" },
-    { name: "Rooibos Tea", price: 25, calories: 5, description: "Classic South African rooibos tea.", ingredients: "Rooibos tea leaves" },
-    { name: "Golden Milk Tea", price: 45, calories: 150, description: "Turmeric and spice tea.", ingredients: "Turmeric, milk, spices" },
-    { name: "Lemon Tea", price: 15, calories: 15, description: "Simple and refreshing lemon tea.", ingredients: "Lemon, hot water" },
-    { name: "Water", price: 20, calories: 0, description: "Still or sparkling water.", ingredients: "Water" },
-    { name: "Switch Energy Drink", price: 15, calories: 110, description: "An energy boost.", ingredients: "Varies" },
+    { name: "Bullet Coffee", price: 50, calories: 200, description: "Energy booster to start your day.", ingredients: "Coffee, butter, MCT oil", category: "Drinks" },
+    { name: "Iced Coffee", price: 35, calories: 120, description: "Refreshing iced coffee.", ingredients: "Coffee, milk, ice", category: "Drinks" },
+    { name: "Detox Tea", price: 40, calories: 10, description: "A cleansing detox tea.", ingredients: "Herbal tea mix", category: "Drinks" },
+    { name: "Chai Tea with Honey", price: 45, calories: 120, description: "Spiced chai tea with a touch of honey.", ingredients: "Chai, milk, honey", category: "Drinks" },
+    { name: "Honey Ginger Tea", price: 35, calories: 80, description: "Soothing honey ginger tea.", ingredients: "Ginger, honey, hot water", category: "Drinks" },
+    { name: "Digestion & Fat Loss Tea", price: 45, calories: 10, description: "A special blend for digestion.", ingredients: "Herbal tea mix", category: "Drinks" },
+    { name: "Rooibos Tea", price: 25, calories: 5, description: "Classic South African rooibos tea.", ingredients: "Rooibos tea leaves", category: "Drinks" },
+    { name: "Golden Milk Tea", price: 45, calories: 150, description: "Turmeric and spice tea.", ingredients: "Turmeric, milk, spices", category: "Drinks" },
+    { name: "Lemon Tea", price: 15, calories: 15, description: "Simple and refreshing lemon tea.", ingredients: "Lemon, hot water", category: "Drinks" },
+    { name: "Water", price: 20, calories: 0, description: "Still or sparkling water.", ingredients: "Water", category: "Drinks" },
+    { name: "Switch Energy Drink", price: 15, calories: 110, description: "An energy boost.", ingredients: "Varies", category: "Drinks" },
     // Smoothies & Lattes
-    { name: "Peanut Butter Smoothie", price: 60, calories: 350, description: "Creamy peanut butter smoothie.", ingredients: "Peanut butter, milk, banana" },
-    { name: "Hazelnut Latte", price: 60, calories: 280, description: "A warm hazelnut latte.", ingredients: "Espresso, milk, hazelnut syrup" },
+    { name: "Peanut Butter Smoothie", price: 60, calories: 350, description: "Creamy peanut butter smoothie.", ingredients: "Peanut butter, milk, banana", category: "Smoothies & Lattes" },
+    { name: "Hazelnut Latte", price: 60, calories: 280, description: "A warm hazelnut latte.", ingredients: "Espresso, milk, hazelnut syrup", category: "Smoothies & Lattes" },
     // Crushers
-    { name: "Strawberry Crusher", price: 50, calories: 180, description: "A refreshing strawberry crusher.", ingredients: "Strawberry, ice" },
+    { name: "Strawberry Crusher", price: 50, calories: 180, description: "A refreshing strawberry crusher.", ingredients: "Strawberry, ice", category: "Crushers" },
     // High Protein Breakfast
-    { name: "High Protein Breakfast", price: 90, calories: 500, description: "A breakfast packed with protein.", ingredients: "3 Eggs, Spinach, Cottage Cheese, Bacon, Cucumber, Tomato, Sourdough" },
+    { name: "High Protein Breakfast", price: 90, calories: 500, description: "A breakfast packed with protein.", ingredients: "3 Eggs, Spinach, Cottage Cheese, Bacon, Cucumber, Tomato, Sourdough", category: "Breakfast" },
     // Open Sandwiches
-    { name: "Salmon, Avo & Egg Sandwich", price: 110, calories: 480, description: "Open sandwich with salmon, avo and egg.", ingredients: "Salmon, avocado, egg, pesto, bread" },
-    { name: "Chicken Mayonnaise Sandwich", price: 65, calories: 420, description: "Classic chicken mayo open sandwich.", ingredients: "Chicken, mayonnaise, bread" },
+    { name: "Salmon, Avo & Egg Sandwich", price: 110, calories: 480, description: "Open sandwich with salmon, avo and egg.", ingredients: "Salmon, avocado, egg, pesto, bread", category: "Open Sandwiches" },
+    { name: "Chicken Mayonnaise Sandwich", price: 65, calories: 420, description: "Classic chicken mayo open sandwich.", ingredients: "Chicken, mayonnaise, bread", category: "Open Sandwiches" },
     // Macro Conscious
-    { name: "Chicken Strips with Avocado", price: 85, calories: 450, description: "Macro-friendly chicken strips.", ingredients: "Chicken, avocado, red onion, feta" },
-    { name: "Chicken & Avo Wrap", price: 85, calories: 480, description: "A healthy chicken and avo wrap.", ingredients: "Chicken, avocado, wrap" },
+    { name: "Chicken Strips with Avocado", price: 85, calories: 450, description: "Macro-friendly chicken strips.", ingredients: "Chicken, avocado, red onion, feta", category: "Macro Conscious" },
+    { name: "Chicken & Avo Wrap", price: 85, calories: 480, description: "A healthy chicken and avo wrap.", ingredients: "Chicken, avocado, wrap", category: "Macro Conscious" },
     // Breakfast
-    { name: "Poached Egg on Greens", price: 60, calories: 250, description: "Two poached eggs on a bed of greens.", ingredients: "Eggs, kale, red onion, cottage cheese" },
-    { name: "Overnight Oats with Berries", price: 40, calories: 300, description: "Healthy and convenient overnight oats.", ingredients: "Oats, chia seeds, yoghurt, berries"},
+    { name: "Poached Egg on Greens", price: 60, calories: 250, description: "Two poached eggs on a bed of greens.", ingredients: "Eggs, kale, red onion, cottage cheese", category: "Breakfast" },
+    { name: "Overnight Oats with Berries", price: 40, calories: 300, description: "Healthy and convenient overnight oats.", ingredients: "Oats, chia seeds, yoghurt, berries", category: "Breakfast"},
 ];
-
 
 export function MenuTable() {
   const [meals, setMeals] = useState<MenuItem[]>([]);
@@ -208,6 +207,15 @@ export function MenuTable() {
     return <Utensils className="h-10 w-10 text-muted-foreground" />;
   }
 
+  const categorizedMeals = meals.reduce((acc, meal) => {
+    const category = (meal as any).category || "Uncategorized";
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(meal);
+    return acc;
+  }, {} as Record<string, MenuItem[]>);
+
 
   if (loading) {
     return (
@@ -266,48 +274,56 @@ export function MenuTable() {
         </Button>
         <Button onClick={handleAddNew}>Add New Meal</Button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
-        {meals.length > 0 ? meals.map((meal) => (
-          <Card key={meal.id} className="flex flex-col">
-            <div className="h-40 w-full flex items-center justify-center bg-card-foreground/5 rounded-t-lg">
-              {getIconForMeal(meal.name)}
+      <div className="space-y-8 mt-4">
+        {Object.entries(categorizedMeals).map(([category, categoryMeals]) => (
+            <div key={category}>
+                <h2 className="text-2xl font-bold tracking-tight mb-4">{category}</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {categoryMeals.map((meal) => (
+                        <Card key={meal.id} className="flex flex-col">
+                            <div className="h-40 w-full flex items-center justify-center bg-card-foreground/5 rounded-t-lg">
+                            {getIconForMeal(meal.name)}
+                            </div>
+                            <CardHeader className="pb-2">
+                            <CardTitle className="text-lg">{meal.name}</CardTitle>
+                            <div className="flex gap-2 pt-1">
+                                <Badge variant="secondary">R{meal.price?.toFixed(2) ?? '0.00'}</Badge>
+                                <Badge variant="outline">{meal.calories ?? 0} kcal</Badge>
+                            </div>
+                            </CardHeader>
+                            <CardContent className="flex-grow pt-2">
+                            <CardDescription className="line-clamp-2">{meal.description}</CardDescription>
+                            <p className="text-xs text-muted-foreground mt-2 font-medium">Ingredients: <span className="font-normal">{meal.ingredients}</span></p>
+                            </CardContent>
+                            <CardFooter className="flex justify-end gap-2">
+                            <Button variant="outline" size="sm" onClick={() => handleEdit(meal)}>Edit</Button>
+                                <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="destructive" size="sm">Delete</Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently delete this meal from the menu.
+                                    </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDeleteMeal(meal.id)}>
+                                        Continue
+                                    </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                                </AlertDialog>
+                            </CardFooter>
+                        </Card>
+                    ))}
+                </div>
             </div>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">{meal.name}</CardTitle>
-              <div className="flex gap-2 pt-1">
-                <Badge variant="secondary">R{meal.price?.toFixed(2) ?? '0.00'}</Badge>
-                <Badge variant="outline">{meal.calories ?? 0} kcal</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="flex-grow pt-2">
-              <CardDescription className="line-clamp-2">{meal.description}</CardDescription>
-              <p className="text-xs text-muted-foreground mt-2 font-medium">Ingredients: <span className="font-normal">{meal.ingredients}</span></p>
-            </CardContent>
-            <CardFooter className="flex justify-end gap-2">
-              <Button variant="outline" size="sm" onClick={() => handleEdit(meal)}>Edit</Button>
-                <AlertDialog>
-                <AlertDialogTrigger asChild>
-                    <Button variant="destructive" size="sm">Delete</Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete this meal from the menu.
-                    </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => handleDeleteMeal(meal.id)}>
-                        Continue
-                    </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-                </AlertDialog>
-            </CardFooter>
-          </Card>
-        )) : (
-            <div className="col-span-full text-center py-12">
+        ))}
+        {meals.length === 0 && (
+             <div className="col-span-full text-center py-12">
                 <Card>
                     <CardContent className="p-6">
                         <h3 className="text-xl font-semibold">Your Menu is Empty</h3>
@@ -331,5 +347,3 @@ export function MenuTable() {
     </>
   );
 }
-
-    
