@@ -36,7 +36,7 @@ import { useToast } from "@/hooks/use-toast";
 import { collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Skeleton } from "../ui/skeleton";
-import { ArrowDown, ArrowUp, ShieldCheck } from "lucide-react";
+import { ArrowDown, ArrowUp, ShieldCheck, Dumbbell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -54,6 +54,7 @@ interface User {
   bodyFat: number;
   muscleMass: number;
   isAdmin?: boolean;
+  isTrainer?: boolean;
 }
 
 interface StatChanges {
@@ -147,6 +148,25 @@ export function UserTable() {
         errorEmitter.emit('permission-error', permissionError);
     });
   };
+  
+  const handleMakeTrainer = async (user: User) => {
+    const userDocRef = doc(db, "users", user.id);
+    const newTrainerStatus = !user.isTrainer;
+    updateDoc(userDocRef, { isTrainer: newTrainerStatus }).then(() => {
+        toast({
+            title: `Trainer Status Updated`,
+            description: `${user.name} is now ${newTrainerStatus ? 'a trainer' : 'no longer a trainer'}.`
+        });
+        fetchUsers();
+    }).catch(serverError => {
+        const permissionError = new FirestorePermissionError({
+            path: userDocRef.path,
+            operation: 'update',
+            requestResourceData: { isTrainer: newTrainerStatus }
+        });
+        errorEmitter.emit('permission-error', permissionError);
+    });
+  };
 
   const StatChangeIndicator = ({ change, good }: { change: number; good: 'up' | 'down' }) => {
     if (change === 0 || isNaN(change)) return null;
@@ -215,6 +235,7 @@ export function UserTable() {
                 <TableCell>
                   <div className="flex items-center gap-2">
                     {user.isAdmin && <ShieldCheck className="h-4 w-4 text-primary" title="Administrator"/>}
+                    {user.isTrainer && <Dumbbell className="h-4 w-4 text-green-500" title="Trainer"/>}
                     {user.name}
                   </div>
                 </TableCell>
@@ -247,9 +268,14 @@ export function UserTable() {
                   <div className="inline-flex rounded-md shadow-sm">
                       <Button variant="outline" size="sm" className="rounded-none rounded-l-md" onClick={() => handleEdit(user)}>Edit</Button>
                        {isSuperAdmin && (
-                        <Button variant="outline" size="sm" className="rounded-none" onClick={() => handleMakeAdmin(user)}>
-                          {user.isAdmin ? 'Revoke Admin' : 'Make Admin'}
-                        </Button>
+                        <>
+                            <Button variant="outline" size="sm" className="rounded-none" onClick={() => handleMakeAdmin(user)}>
+                                {user.isAdmin ? 'Revoke Admin' : 'Make Admin'}
+                            </Button>
+                             <Button variant="outline" size="sm" className="rounded-none" onClick={() => handleMakeTrainer(user)}>
+                                {user.isTrainer ? 'Revoke Trainer' : 'Make Trainer'}
+                            </Button>
+                        </>
                       )}
                       <AlertDialog>
                       <AlertDialogTrigger asChild>

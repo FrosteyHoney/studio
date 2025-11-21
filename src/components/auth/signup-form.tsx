@@ -73,6 +73,7 @@ export function SignUpForm() {
             prevBodyFat: 0,
             prevMuscleMass: 0,
             isAdmin: false,
+            isTrainer: false,
         });
       }
 

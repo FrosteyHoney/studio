@@ -98,6 +98,7 @@ export function LoginForm() {
             prevBodyFat: 0,
             prevMuscleMass: 0,
             isAdmin: false,
+            isTrainer: false,
         });
         toast({
           title: "Profile Initialized",
