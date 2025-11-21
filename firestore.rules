@@ -9,7 +9,8 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
     
-    // Public collection for connection testing. Anyone can create. No one can read/update/delete.
+    // Public collection for connection testing. Anyone can create a document.
+    // No one can read, update, or delete any documents in this collection.
     match /test_writes/{docId} {
       allow create: if true;
       allow read, update, delete: if false;
