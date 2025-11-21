@@ -7,8 +7,9 @@ import { doc, getDoc, collection, query, where, getDocs, DocumentData } from "fi
 import { db } from "@/lib/firebase";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import Image from "next/image";
 import { format } from "date-fns";
+import { Utensils, Salad, Beef, VenetianMask, UtensilsCrossed, CakeSlice, Cupcake, Coffee, Martini, Soup, Sandwich, Fish, AppWindow, Apple } from "lucide-react";
+
 
 interface Meal {
     id: string;
@@ -94,6 +95,22 @@ export function DailyMealDisplay() {
         }
     }, [user, authLoading]);
 
+    const getIconForMeal = (name: string) => {
+        const lowerName = name.toLowerCase();
+        if (lowerName.includes('salad')) return <Salad className="h-16 w-16 text-muted-foreground" />;
+        if (lowerName.includes('burger') || lowerName.includes('steak')) return <Beef className="h-16 w-16 text-muted-foreground" />;
+        if (lowerName.includes('pasta') || lowerName.includes('fettuccine') || lowerName.includes('noodles')) return <UtensilsCrossed className="h-16 w-16 text-muted-foreground" />;
+        if (lowerName.includes('keto') || lowerName.includes('hake')) return <Fish className="h-16 w-16 text-muted-foreground" />;
+        if (lowerName.includes('brownie') || lowerName.includes('cheesecake') || lowerName.includes('sweet')) return <CakeSlice className="h-16 w-16 text-muted-foreground" />;
+        if (lowerName.includes('muffin')) return <Cupcake className="h-16 w-16 text-muted-foreground" />;
+        if (lowerName.includes('coffee') || lowerName.includes('tea') || lowerName.includes('latte')) return <Coffee className="h-16 w-16 text-muted-foreground" />;
+        if (lowerName.includes('smoothie') || lowerName.includes('crusher') || lowerName.includes('drink')) return <Martini className="h-16 w-16 text-muted-foreground" />;
+        if (lowerName.includes('breakfast') || lowerName.includes('egg') || lowerName.includes('oats')) return <Soup className="h-16 w-16 text-muted-foreground" />;
+        if (lowerName.includes('sandwich') || lowerName.includes('wrap')) return <Sandwich className="h-16 w-16 text-muted-foreground" />;
+        if (lowerName.includes('macro') || lowerName.includes('conscious')) return <Apple className="h-16 w-16 text-muted-foreground" />;
+        return <Utensils className="h-16 w-16 text-muted-foreground" />;
+    }
+
     if (loading || authLoading) {
         return (
             <div className="space-y-4">
@@ -148,14 +165,8 @@ export function DailyMealDisplay() {
                             {meal ? (
                                 <Card className="overflow-hidden">
                                     <CardContent className="p-0">
-                                        <div className="relative h-48 w-full">
-                                            <Image
-                                                src={meal.image || "https://placehold.co/400x300.png"}
-                                                alt={meal.name}
-                                                fill
-                                                className="object-cover"
-                                                data-ai-hint="meal food"
-                                            />
+                                        <div className="h-48 w-full flex items-center justify-center bg-muted/20">
+                                            {getIconForMeal(meal.name)}
                                         </div>
                                         <div className="p-4">
                                             <CardTitle className="text-lg mb-2">{meal.name}</CardTitle>

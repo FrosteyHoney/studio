@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/dialog";
 import { MenuForm, type MenuItem } from "./menu-form";
 import { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
 import { collection, getDocs, deleteDoc, doc, writeBatch } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
@@ -31,71 +30,71 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Badge } from "../ui/badge";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { RefreshCw, Loader2 } from "lucide-react";
+import { RefreshCw, Loader2, Utensils, Salad, Beef, VenetianMask, UtensilsCrossed, CakeSlice, Cupcake, Coffee, Martini, Soup, Sandwich, Fish, AppWindow, Apple } from "lucide-react";
 
 const newMenuData = [
     // Salads
-    { name: "Broccoli Salad", price: 60, calories: 150, description: "A refreshing broccoli salad.", ingredients: "Broccoli, dressing", image: "https://placehold.co/400x300/F7CAC9/333333?text=Broccoli+Salad" },
-    { name: "Hummus with Carrot & Cucumber", price: 50, calories: 180, description: "Creamy hummus with fresh vegetable sticks.", ingredients: "Hummus, Carrots, Cucumber", image: "https://placehold.co/400x300/F7CAC9/333333?text=Hummus" },
-    { name: "Chicken Salad", price: 85, calories: 350, description: "Classic chicken salad.", ingredients: "Chicken, lettuce, tomato", image: "https://placehold.co/400x300/F7CAC9/333333?text=Chicken+Salad" },
-    { name: "Tuna Salad", price: 80, calories: 320, description: "A light and tasty tuna salad.", ingredients: "Tuna, lettuce, cucumber", image: "https://placehold.co/400x300/F7CAC9/333333?text=Tuna+Salad" },
+    { name: "Broccoli Salad", price: 60, calories: 150, description: "A refreshing broccoli salad.", ingredients: "Broccoli, dressing" },
+    { name: "Hummus with Carrot & Cucumber", price: 50, calories: 180, description: "Creamy hummus with fresh vegetable sticks.", ingredients: "Hummus, Carrots, Cucumber" },
+    { name: "Chicken Salad", price: 85, calories: 350, description: "Classic chicken salad.", ingredients: "Chicken, lettuce, tomato" },
+    { name: "Tuna Salad", price: 80, calories: 320, description: "A light and tasty tuna salad.", ingredients: "Tuna, lettuce, cucumber" },
     // Burgers
-    { name: "Beef Burger", price: 85, calories: 650, description: "A juicy beef burger served with chips.", ingredients: "Beef patty, bun, chips", image: "https://placehold.co/400x300/D36B36/FFFFFF?text=Beef+Burger" },
-    { name: "Chicken Burger", price: 85, calories: 600, description: "A grilled chicken burger served with chips.", ingredients: "Chicken breast, bun, chips", image: "https://placehold.co/400x300/D36B36/FFFFFF?text=Chicken+Burger" },
-    { name: "Mushroom Burger", price: 95, calories: 550, description: "A hearty mushroom burger served with chips.", ingredients: "Mushroom, bun, chips", image: "https://placehold.co/400x300/D36B36/FFFFFF?text=Mushroom+Burger" },
-    { name: "Cheeseburger", price: 95, calories: 700, description: "A classic cheeseburger served with chips.", ingredients: "Beef patty, cheese, bun, chips", image: "https://placehold.co/400x300/D36B36/FFFFFF?text=Cheeseburger" },
-    { name: "Sloppy Joe", price: 95, calories: 720, description: "A delicious and messy sloppy joe served with chips.", ingredients: "Mince, bun, chips", image: "https://placehold.co/400x300/D36B36/FFFFFF?text=Sloppy+Joe" },
+    { name: "Beef Burger", price: 85, calories: 650, description: "A juicy beef burger served with chips.", ingredients: "Beef patty, bun, chips" },
+    { name: "Chicken Burger", price: 85, calories: 600, description: "A grilled chicken burger served with chips.", ingredients: "Chicken breast, bun, chips" },
+    { name: "Mushroom Burger", price: 95, calories: 550, description: "A hearty mushroom burger served with chips.", ingredients: "Mushroom, bun, chips" },
+    { name: "Cheeseburger", price: 95, calories: 700, description: "A classic cheeseburger served with chips.", ingredients: "Beef patty, cheese, bun, chips" },
+    { name: "Sloppy Joe", price: 95, calories: 720, description: "A delicious and messy sloppy joe served with chips.", ingredients: "Mince, bun, chips" },
     // Pastas
-    { name: "Spaghetti Bolognese with Egg Noodles", price: 75, calories: 450, description: "Classic spaghetti bolognese with egg noodles.", ingredients: "Mince, tomato sauce, noodles", image: "https://placehold.co/400x300/F7CAC9/333333?text=Pasta" },
-    { name: "Salmon Alfredo", price: 95, calories: 600, description: "Creamy salmon alfredo pasta.", ingredients: "Salmon, cream sauce, pasta", image: "https://placehold.co/400x300/F7CAC9/333333?text=Pasta" },
-    { name: "Chicken & Mushroom Fettuccine", price: 95, calories: 550, description: "Chicken and mushroom in a creamy fettuccine.", ingredients: "Chicken, mushroom, cream, pasta", image: "https://placehold.co/400x300/F7CAC9/333333?text=Pasta" },
+    { name: "Spaghetti Bolognese with Egg Noodles", price: 75, calories: 450, description: "Classic spaghetti bolognese with egg noodles.", ingredients: "Mince, tomato sauce, noodles" },
+    { name: "Salmon Alfredo", price: 95, calories: 600, description: "Creamy salmon alfredo pasta.", ingredients: "Salmon, cream sauce, pasta" },
+    { name: "Chicken & Mushroom Fettuccine", price: 95, calories: 550, description: "Chicken and mushroom in a creamy fettuccine.", ingredients: "Chicken, mushroom, cream, pasta" },
     // Keto Meals
-    { name: "Salmon & Avo Salad", price: 105, calories: 420, description: "A healthy keto salmon and avocado salad.", ingredients: "Salmon, avocado, greens", image: "https://placehold.co/400x300/F7CAC9/333333?text=Keto+Meal" },
-    { name: "Steak & Broccoli", price: 110, calories: 500, description: "Grilled steak with a side of broccoli.", ingredients: "Steak, broccoli", image: "https://placehold.co/400x300/F7CAC9/333333?text=Keto+Meal" },
-    { name: "Hake & Veggies", price: 90, calories: 350, description: "Grilled hake with mixed vegetables.", ingredients: "Hake, mixed veggies", image: "https://placehold.co/400x300/F7CAC9/333333?text=Keto+Meal" },
-    { name: "Cheesy Hake with Salad", price: 95, calories: 400, description: "Hake with melted cheese, served with a side salad.", ingredients: "Hake, cheese, salad", image: "https://placehold.co/400x300/F7CAC9/333333?text=Keto+Meal" },
+    { name: "Salmon & Avo Salad", price: 105, calories: 420, description: "A healthy keto salmon and avocado salad.", ingredients: "Salmon, avocado, greens" },
+    { name: "Steak & Broccoli", price: 110, calories: 500, description: "Grilled steak with a side of broccoli.", ingredients: "Steak, broccoli" },
+    { name: "Hake & Veggies", price: 90, calories: 350, description: "Grilled hake with mixed vegetables.", ingredients: "Hake, mixed veggies" },
+    { name: "Cheesy Hake with Salad", price: 95, calories: 400, description: "Hake with melted cheese, served with a side salad.", ingredients: "Hake, cheese, salad" },
     // Sweet Tooth
-    { name: "Protein Brownies (x2)", price: 45, calories: 220, description: "Delicious protein-packed brownies.", ingredients: "Protein powder, cocoa, eggs", image: "https://placehold.co/400x300/D36B36/FFFFFF?text=Sweet+Tooth" },
-    { name: "Coconut Chia Granola Clusters (x2)", price: 50, calories: 250, description: "Crunchy granola clusters.", ingredients: "Oats, chia, coconut", image: "https://placehold.co/400x300/D36B36/FFFFFF?text=Sweet+Tooth" },
-    { name: "Egg Muffins (x3)", price: 50, calories: 300, description: "Savory egg muffins.", ingredients: "Eggs, cheese, vegetables", image: "https://placehold.co/400x300/D36B36/FFFFFF?text=Sweet+Tooth" },
-    { name: "Whey Protein Muffins", price: 55, calories: 280, description: "Muffins made with whey protein.", ingredients: "Whey protein, flour, eggs", image: "https://placehold.co/400x300/D36B36/FFFFFF?text=Sweet+Tooth" },
+    { name: "Protein Brownies (x2)", price: 45, calories: 220, description: "Delicious protein-packed brownies.", ingredients: "Protein powder, cocoa, eggs" },
+    { name: "Coconut Chia Granola Clusters (x2)", price: 50, calories: 250, description: "Crunchy granola clusters.", ingredients: "Oats, chia, coconut" },
+    { name: "Egg Muffins (x3)", price: 50, calories: 300, description: "Savory egg muffins.", ingredients: "Eggs, cheese, vegetables" },
+    { name: "Whey Protein Muffins", price: 55, calories: 280, description: "Muffins made with whey protein.", ingredients: "Whey protein, flour, eggs" },
     // Muffins
-    { name: "Carrot Muffin", price: 35, calories: 280, description: "A delicious carrot muffin.", ingredients: "Carrot, flour, sugar", image: "https://placehold.co/400x300/F7CAC9/333333?text=Muffin" },
-    { name: "Chocolate Muffin", price: 35, calories: 300, description: "A delicious chocolate muffin.", ingredients: "Chocolate, flour, sugar", image: "https://placehold.co/400x300/F7CAC9/333333?text=Muffin" },
-    { name: "Lemon Poppy Muffin", price: 35, calories: 270, description: "A delicious lemon poppy seed muffin.", ingredients: "Lemon, poppy seeds, flour", image: "https://placehold.co/400x300/F7CAC9/333333?text=Muffin" },
-    { name: "Vanilla Muffin", price: 35, calories: 260, description: "A delicious vanilla muffin.", ingredients: "Vanilla, flour, sugar", image: "https://placehold.co/400x300/F7CAC9/333333?text=Muffin" },
-    { name: "Red Velvet Muffin", price: 35, calories: 290, description: "A delicious red velvet muffin.", ingredients: "Red velvet, flour, sugar", image: "https://placehold.co/400x300/F7CAC9/333333?text=Muffin" },
-    { name: "Blueberry Muffin", price: 35, calories: 250, description: "A delicious blueberry muffin.", ingredients: "Blueberry, flour, sugar", image: "https://placehold.co/400x300/F7CAC9/333333?text=Muffin" },
-    { name: "Chocolate Chip Muffin", price: 35, calories: 300, description: "A delicious chocolate chip muffin.", ingredients: "Chocolate chips, flour, sugar", image: "https://placehold.co/400x300/F7CAC9/333333?text=Muffin" },
-    { name: "Cheesecake", price: 60, calories: 350, description: "A slice of classic cheesecake.", ingredients: "Cream cheese, sugar, crust", image: "https://placehold.co/400x300/D36B36/FFFFFF?text=Cheesecake" },
+    { name: "Carrot Muffin", price: 35, calories: 280, description: "A delicious carrot muffin.", ingredients: "Carrot, flour, sugar" },
+    { name: "Chocolate Muffin", price: 35, calories: 300, description: "A delicious chocolate muffin.", ingredients: "Chocolate, flour, sugar" },
+    { name: "Lemon Poppy Muffin", price: 35, calories: 270, description: "A delicious lemon poppy seed muffin.", ingredients: "Lemon, poppy seeds, flour" },
+    { name: "Vanilla Muffin", price: 35, calories: 260, description: "A delicious vanilla muffin.", ingredients: "Vanilla, flour, sugar" },
+    { name: "Red Velvet Muffin", price: 35, calories: 290, description: "A delicious red velvet muffin.", ingredients: "Red velvet, flour, sugar" },
+    { name: "Blueberry Muffin", price: 35, calories: 250, description: "A delicious blueberry muffin.", ingredients: "Blueberry, flour, sugar" },
+    { name: "Chocolate Chip Muffin", price: 35, calories: 300, description: "A delicious chocolate chip muffin.", ingredients: "Chocolate chips, flour, sugar" },
+    { name: "Cheesecake", price: 60, calories: 350, description: "A slice of classic cheesecake.", ingredients: "Cream cheese, sugar, crust" },
     // Drinks
-    { name: "Bullet Coffee", price: 50, calories: 200, description: "Energy booster to start your day.", ingredients: "Coffee, butter, MCT oil", image: "https://placehold.co/400x300/F7CAC9/333333?text=Coffee" },
-    { name: "Iced Coffee", price: 35, calories: 120, description: "Refreshing iced coffee.", ingredients: "Coffee, milk, ice", image: "https://placehold.co/400x300/F7CAC9/333333?text=Coffee" },
-    { name: "Detox Tea", price: 40, calories: 10, description: "A cleansing detox tea.", ingredients: "Herbal tea mix", image: "https://placehold.co/400x300/F7CAC9/333333?text=Tea" },
-    { name: "Chai Tea with Honey", price: 45, calories: 120, description: "Spiced chai tea with a touch of honey.", ingredients: "Chai, milk, honey", image: "https://placehold.co/400x300/F7CAC9/333333?text=Tea" },
-    { name: "Honey Ginger Tea", price: 35, calories: 80, description: "Soothing honey ginger tea.", ingredients: "Ginger, honey, hot water", image: "https://placehold.co/400x300/F7CAC9/333333?text=Tea" },
-    { name: "Digestion & Fat Loss Tea", price: 45, calories: 10, description: "A special blend for digestion.", ingredients: "Herbal tea mix", image: "https://placehold.co/400x300/F7CAC9/333333?text=Tea" },
-    { name: "Rooibos Tea", price: 25, calories: 5, description: "Classic South African rooibos tea.", ingredients: "Rooibos tea leaves", image: "https://placehold.co/400x300/F7CAC9/333333?text=Tea" },
-    { name: "Golden Milk Tea", price: 45, calories: 150, description: "Turmeric and spice tea.", ingredients: "Turmeric, milk, spices", image: "https://placehold.co/400x300/F7CAC9/333333?text=Tea" },
-    { name: "Lemon Tea", price: 15, calories: 15, description: "Simple and refreshing lemon tea.", ingredients: "Lemon, hot water", image: "https://placehold.co/400x300/F7CAC9/333333?text=Tea" },
-    { name: "Water", price: 20, calories: 0, description: "Still or sparkling water.", ingredients: "Water", image: "https://placehold.co/400x300/F7CAC9/333333?text=Water" },
-    { name: "Switch Energy Drink", price: 15, calories: 110, description: "An energy boost.", ingredients: "Varies", image: "https://placehold.co/400x300/F7CAC9/333333?text=Energy+Drink" },
+    { name: "Bullet Coffee", price: 50, calories: 200, description: "Energy booster to start your day.", ingredients: "Coffee, butter, MCT oil" },
+    { name: "Iced Coffee", price: 35, calories: 120, description: "Refreshing iced coffee.", ingredients: "Coffee, milk, ice" },
+    { name: "Detox Tea", price: 40, calories: 10, description: "A cleansing detox tea.", ingredients: "Herbal tea mix" },
+    { name: "Chai Tea with Honey", price: 45, calories: 120, description: "Spiced chai tea with a touch of honey.", ingredients: "Chai, milk, honey" },
+    { name: "Honey Ginger Tea", price: 35, calories: 80, description: "Soothing honey ginger tea.", ingredients: "Ginger, honey, hot water" },
+    { name: "Digestion & Fat Loss Tea", price: 45, calories: 10, description: "A special blend for digestion.", ingredients: "Herbal tea mix" },
+    { name: "Rooibos Tea", price: 25, calories: 5, description: "Classic South African rooibos tea.", ingredients: "Rooibos tea leaves" },
+    { name: "Golden Milk Tea", price: 45, calories: 150, description: "Turmeric and spice tea.", ingredients: "Turmeric, milk, spices" },
+    { name: "Lemon Tea", price: 15, calories: 15, description: "Simple and refreshing lemon tea.", ingredients: "Lemon, hot water" },
+    { name: "Water", price: 20, calories: 0, description: "Still or sparkling water.", ingredients: "Water" },
+    { name: "Switch Energy Drink", price: 15, calories: 110, description: "An energy boost.", ingredients: "Varies" },
     // Smoothies & Lattes
-    { name: "Peanut Butter Smoothie", price: 60, calories: 350, description: "Creamy peanut butter smoothie.", ingredients: "Peanut butter, milk, banana", image: "https://placehold.co/400x300/D36B36/FFFFFF?text=Smoothie" },
-    { name: "Hazelnut Latte", price: 60, calories: 280, description: "A warm hazelnut latte.", ingredients: "Espresso, milk, hazelnut syrup", image: "https://placehold.co/400x300/D36B36/FFFFFF?text=Latte" },
+    { name: "Peanut Butter Smoothie", price: 60, calories: 350, description: "Creamy peanut butter smoothie.", ingredients: "Peanut butter, milk, banana" },
+    { name: "Hazelnut Latte", price: 60, calories: 280, description: "A warm hazelnut latte.", ingredients: "Espresso, milk, hazelnut syrup" },
     // Crushers
-    { name: "Strawberry Crusher", price: 50, calories: 180, description: "A refreshing strawberry crusher.", ingredients: "Strawberry, ice", image: "https://placehold.co/400x300/F7CAC9/333333?text=Crusher" },
+    { name: "Strawberry Crusher", price: 50, calories: 180, description: "A refreshing strawberry crusher.", ingredients: "Strawberry, ice" },
     // High Protein Breakfast
-    { name: "High Protein Breakfast", price: 90, calories: 500, description: "A breakfast packed with protein.", ingredients: "3 Eggs, Spinach, Cottage Cheese, Bacon, Cucumber, Tomato, Sourdough", image: "https://placehold.co/400x300/D36B36/FFFFFF?text=Breakfast" },
+    { name: "High Protein Breakfast", price: 90, calories: 500, description: "A breakfast packed with protein.", ingredients: "3 Eggs, Spinach, Cottage Cheese, Bacon, Cucumber, Tomato, Sourdough" },
     // Open Sandwiches
-    { name: "Salmon, Avo & Egg Sandwich", price: 110, calories: 480, description: "Open sandwich with salmon, avo and egg.", ingredients: "Salmon, avocado, egg, pesto, bread", image: "https://placehold.co/400x300/F7CAC9/333333?text=Sandwich" },
-    { name: "Chicken Mayonnaise Sandwich", price: 65, calories: 420, description: "Classic chicken mayo open sandwich.", ingredients: "Chicken, mayonnaise, bread", image: "https://placehold.co/400x300/F7CAC9/333333?text=Sandwich" },
+    { name: "Salmon, Avo & Egg Sandwich", price: 110, calories: 480, description: "Open sandwich with salmon, avo and egg.", ingredients: "Salmon, avocado, egg, pesto, bread" },
+    { name: "Chicken Mayonnaise Sandwich", price: 65, calories: 420, description: "Classic chicken mayo open sandwich.", ingredients: "Chicken, mayonnaise, bread" },
     // Macro Conscious
-    { name: "Chicken Strips with Avocado", price: 85, calories: 450, description: "Macro-friendly chicken strips.", ingredients: "Chicken, avocado, red onion, feta", image: "https://placehold.co/400x300/D36B36/FFFFFF?text=Macro+Meal" },
-    { name: "Chicken & Avo Wrap", price: 85, calories: 480, description: "A healthy chicken and avo wrap.", ingredients: "Chicken, avocado, wrap", image: "https://placehold.co/400x300/D36B36/FFFFFF?text=Macro+Meal" },
+    { name: "Chicken Strips with Avocado", price: 85, calories: 450, description: "Macro-friendly chicken strips.", ingredients: "Chicken, avocado, red onion, feta" },
+    { name: "Chicken & Avo Wrap", price: 85, calories: 480, description: "A healthy chicken and avo wrap.", ingredients: "Chicken, avocado, wrap" },
     // Breakfast
-    { name: "Poached Egg on Greens", price: 60, calories: 250, description: "Two poached eggs on a bed of greens.", ingredients: "Eggs, kale, red onion, cottage cheese", image: "https://placehold.co/400x300/F7CAC9/333333?text=Breakfast" },
-    { name: "Overnight Oats with Berries", price: 40, calories: 300, description: "Healthy and convenient overnight oats.", ingredients: "Oats, chia seeds, yoghurt, berries", image: "https://placehold.co/400x300/F7CAC9/333333?text=Breakfast" },
+    { name: "Poached Egg on Greens", price: 60, calories: 250, description: "Two poached eggs on a bed of greens.", ingredients: "Eggs, kale, red onion, cottage cheese" },
+    { name: "Overnight Oats with Berries", price: 40, calories: 300, description: "Healthy and convenient overnight oats.", ingredients: "Oats, chia seeds, yoghurt, berries"},
 ];
 
 
@@ -193,6 +192,23 @@ export function MenuTable() {
         errorEmitter.emit('permission-error', permissionError);
     });
   };
+  
+  const getIconForMeal = (name: string) => {
+    const lowerName = name.toLowerCase();
+    if (lowerName.includes('salad')) return <Salad className="h-10 w-10 text-muted-foreground" />;
+    if (lowerName.includes('burger') || lowerName.includes('steak')) return <Beef className="h-10 w-10 text-muted-foreground" />;
+    if (lowerName.includes('pasta') || lowerName.includes('fettuccine') || lowerName.includes('noodles')) return <UtensilsCrossed className="h-10 w-10 text-muted-foreground" />;
+    if (lowerName.includes('keto') || lowerName.includes('hake')) return <Fish className="h-10 w-10 text-muted-foreground" />;
+    if (lowerName.includes('brownie') || lowerName.includes('cheesecake') || lowerName.includes('sweet')) return <CakeSlice className="h-10 w-10 text-muted-foreground" />;
+    if (lowerName.includes('muffin')) return <Cupcake className="h-10 w-10 text-muted-foreground" />;
+    if (lowerName.includes('coffee') || lowerName.includes('tea') || lowerName.includes('latte')) return <Coffee className="h-10 w-10 text-muted-foreground" />;
+    if (lowerName.includes('smoothie') || lowerName.includes('crusher') || lowerName.includes('drink')) return <Martini className="h-10 w-10 text-muted-foreground" />;
+    if (lowerName.includes('breakfast') || lowerName.includes('egg') || lowerName.includes('oats')) return <Soup className="h-10 w-10 text-muted-foreground" />;
+    if (lowerName.includes('sandwich') || lowerName.includes('wrap')) return <Sandwich className="h-10 w-10 text-muted-foreground" />;
+    if (lowerName.includes('macro') || lowerName.includes('conscious')) return <Apple className="h-10 w-10 text-muted-foreground" />;
+    return <Utensils className="h-10 w-10 text-muted-foreground" />;
+  }
+
 
   if (loading) {
     return (
@@ -254,14 +270,8 @@ export function MenuTable() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
         {meals.length > 0 ? meals.map((meal) => (
           <Card key={meal.id} className="flex flex-col">
-            <div className="relative h-40 w-full">
-              <Image
-                src={(meal.image && (meal.image.startsWith('http://') || meal.image.startsWith('https://'))) ? meal.image : "https://placehold.co/400x300.png"}
-                alt={meal.name}
-                fill
-                className="object-cover rounded-t-lg"
-                data-ai-hint="meal food"
-              />
+            <div className="h-40 w-full flex items-center justify-center bg-card-foreground/5 rounded-t-lg">
+              {getIconForMeal(meal.name)}
             </div>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg">{meal.name}</CardTitle>
@@ -322,5 +332,3 @@ export function MenuTable() {
     </>
   );
 }
-
-    
