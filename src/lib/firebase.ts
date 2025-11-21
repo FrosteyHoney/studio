@@ -3,14 +3,12 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA43pY3J8WL8IxeuPiQXqu-1Yv_vJityI0",
-  authDomain: "ittedbodiesapp.firebaseapp.com",
-  databaseURL: "https://ittedbodiesapp-default-rtdb.firebaseio.com/",
-  projectId: "ittedbodiesapp",
-  storageBucket: "ittedbodiesapp.appspot.com",
-  messagingSenderId: "91788918036",
-  appId: "1:91788918036:web:d8e8c235f5b168d6685601",
-  measurementId: "G-745M66YCZ9"
+  apiKey: "AIzaSyD7Owul2wb8JVIpE274gXLTkUkG3fZ6PC0",
+  authDomain: "committed-bodies-website.firebaseapp.com",
+  projectId: "committed-bodies-website",
+  storageBucket: "committed-bodies-website.appspot.com",
+  messagingSenderId: "1028837700024",
+  appId: "1:1028837700024:web:6799ca191a0cb76f195f4d"
 };
 
 // Initialize Firebase
