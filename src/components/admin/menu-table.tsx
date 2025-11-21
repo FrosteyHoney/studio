@@ -33,32 +33,83 @@ import { Loader2 } from "lucide-react";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 
-const healthyMealsSeedData = [
+const dailyRoastGrillMenuSeedData = [
+    // Salads
+    { name: 'Broccoli Salad', price: 75.00, calories: 350, description: 'A fresh and crunchy broccoli salad.', ingredients: 'Broccoli, Dressing', image: 'https://placehold.co/400x300.png' },
+    { name: 'Hummus with Carrot & Cucumber', price: 65.00, calories: 250, description: 'Creamy hummus served with fresh carrot and cucumber sticks.', ingredients: 'Hummus, Carrot, Cucumber', image: 'https://placehold.co/400x300.png' },
+    { name: 'Chicken Salad', price: 85.00, calories: 450, description: 'Classic chicken salad with a creamy dressing.', ingredients: 'Chicken, Mayonnaise, Celery, Lettuce', image: 'https://placehold.co/400x300.png' },
+    { name: 'Tuna Salad', price: 80.00, calories: 420, description: 'Flaky tuna mixed with mayonnaise and herbs.', ingredients: 'Tuna, Mayonnaise, Herbs', image: 'https://placehold.co/400x300.png' },
+
+    // Burgers
+    { name: 'Beef Burger', price: 85.00, calories: 750, description: 'A classic beef burger served with a side of crispy chips.', ingredients: 'Beef Patty, Bun, Lettuce, Tomato, Chips', image: 'https://placehold.co/400x300.png' },
+    { name: 'Chicken Burger', price: 85.00, calories: 700, description: 'A juicy chicken burger served with a side of crispy chips.', ingredients: 'Chicken Patty, Bun, Lettuce, Tomato, Chips', image: 'https://placehold.co/400x300.png' },
+    { name: 'Mushroom Burger', price: 95.00, calories: 680, description: 'A savory mushroom burger served with a side of crispy chips.', ingredients: 'Mushroom Patty, Bun, Lettuce, Tomato, Chips', image: 'https://placehold.co/400x300.png' },
+    { name: 'Cheeseburger', price: 95.00, calories: 800, description: 'A classic beef burger with cheese, served with a side of crispy chips.', ingredients: 'Beef Patty, Cheese, Bun, Lettuce, Tomato, Chips', image: 'https://placehold.co/400x300.png' },
+    { name: 'Sloppy Joe', price: 95.00, calories: 820, description: 'A hearty and messy Sloppy Joe served with a side of crispy chips.', ingredients: 'Ground Beef, Tomato Sauce, Bun, Chips', image: 'https://placehold.co/400x300.png' },
+
+    // Pastas
+    { name: 'Spaghetti Bolognese with Egg Noodles', price: 75.00, calories: 650, description: 'A rich bolognese sauce served over egg noodles.', ingredients: 'Ground Beef, Tomato Sauce, Egg Noodles', image: 'https://placehold.co/400x300.png' },
+    { name: 'Salmon Alfredo', price: 95.00, calories: 750, description: 'Creamy Alfredo pasta with pieces of flaky salmon.', ingredients: 'Salmon, Fettuccine, Cream, Parmesan', image: 'https://placehold.co/400x300.png' },
+    { name: 'Chicken & Mushroom Fettuccine', price: 95.00, calories: 720, description: 'Fettuccine pasta with chicken and mushrooms in a creamy sauce.', ingredients: 'Chicken, Mushroom, Fettuccine, Cream Sauce', image: 'https://placehold.co/400x300.png' },
+
+    // Keto Meals
+    { name: 'Salmon & Avo Salad', price: 125.00, calories: 550, description: 'A keto-friendly salad with salmon and fresh avocado.', ingredients: 'Salmon, Avocado, Mixed Greens, Lemon Dressing', image: 'https://placehold.co/400x300.png' },
+    { name: 'Steak & Broccoli', price: 130.00, calories: 600, description: 'Grilled steak served with a side of steamed broccoli.', ingredients: 'Steak, Broccoli, Garlic Butter', image: 'https://placehold.co/400x300.png' },
+    { name: 'Hake & Veggies', price: 110.00, calories: 480, description: 'A light and healthy meal of hake fillet with mixed vegetables.', ingredients: 'Hake, Mixed Vegetables, Lemon', image: 'https://placehold.co/400x300.png' },
+    { name: 'Cheesy Hake served with Salad', price: 115.00, calories: 520, description: 'Hake fillet topped with cheese and served with a side salad.', ingredients: 'Hake, Cheese, Mixed Greens', image: 'https://placehold.co/400x300.png' },
+
+    // Sweet Tooth
+    { name: 'Protein Brownies (x2)', price: 45.00, calories: 300, description: 'Two rich and fudgy protein-packed brownies.', ingredients: 'Protein Powder, Cocoa, Almond Flour', image: 'https://placehold.co/400x300.png' },
+    { name: 'Coconut Chia Granola Clusters (x2)', price: 50.00, calories: 280, description: 'Two crunchy granola clusters with coconut and chia seeds.', ingredients: 'Oats, Coconut, Chia Seeds, Honey', image: 'https://placehold.co/400x300.png' },
+    { name: 'Egg Muffins (x3)', price: 50.00, calories: 320, description: 'Three savory egg muffins, perfect for a protein boost.', ingredients: 'Eggs, Spinach, Feta, Bell Peppers', image: 'https://placehold.co/400x300.png' },
+    { name: 'Whey Protein Muffins', price: 55.00, calories: 250, description: 'A muffin packed with whey protein for a post-workout snack.', ingredients: 'Whey Protein, Flour, Egg', image: 'https://placehold.co/400x300.png' },
+    { name: 'Cheesecake Muffin', price: 35.00, calories: 450, description: 'A single serving cheesecake muffin.', ingredients: 'Cream Cheese, Sugar, Graham Cracker', image: 'https://placehold.co/400x300.png' },
+    { name: 'Cheesecake Slice', price: 60.00, calories: 550, description: 'A slice of creamy, classic cheesecake.', ingredients: 'Cream Cheese, Sugar, Graham Cracker Crust', image: 'https://placehold.co/400x300.png' },
+
+    // Muffins
+    { name: 'Carrot Muffin', price: 35.00, calories: 380, description: 'A moist carrot muffin with spices.', ingredients: 'Carrot, Flour, Sugar', image: 'https://placehold.co/400x300.png' },
+    { name: 'Chocolate Muffin', price: 35.00, calories: 400, description: 'A rich chocolate muffin.', ingredients: 'Chocolate, Flour, Sugar', image: 'https://placehold.co/400x300.png' },
+    { name: 'Lemon Poppy Muffin', price: 35.00, calories: 360, description: 'A zesty lemon and poppy seed muffin.', ingredients: 'Lemon, Poppy Seeds, Flour', image: 'https://placehold.co/400x300.png' },
+    { name: 'Vanilla Muffin', price: 35.00, calories: 350, description: 'A classic vanilla muffin.', ingredients: 'Vanilla, Flour, Sugar', image: 'https://placehold.co/400x300.png' },
+    { name: 'Red Velvet Muffin', price: 35.00, calories: 410, description: 'A red velvet muffin with cream cheese frosting.', ingredients: 'Red Velvet Cake, Cream Cheese', image: 'https://placehold.co/400x300.png' },
+    { name: 'Blueberry Muffin', price: 35.00, calories: 370, description: 'A muffin bursting with blueberries.', ingredients: 'Blueberries, Flour, Sugar', image: 'https://placehold.co/400x300.png' },
+    { name: 'Chocolate Chip Muffin', price: 35.00, calories: 420, description: 'A classic muffin with chocolate chips.', ingredients: 'Chocolate Chips, Flour, Sugar', image: 'https://placehold.co/400x300.png' },
+
+    // Open Sandwiches
+    { name: 'Salmon, Avo & Egg Open Sandwich', price: 115.00, calories: 600, description: 'An open sandwich with salmon, avocado, egg, and basil pesto cream.', ingredients: 'Sourdough, Salmon, Avocado, Egg, Basil Pesto', image: 'https://placehold.co/400x300.png' },
+    { name: 'Chicken Mayonnaise Open Sandwich', price: 65.00, calories: 550, description: 'A classic chicken mayonnaise open sandwich.', ingredients: 'Sourdough, Chicken, Mayonnaise', image: 'https://placehold.co/400x300.png' },
+    { name: 'Salmon, Egg & Cheese Open Sandwich', price: 110.00, calories: 620, description: 'A delicious combination of salmon, egg, and cheese on an open sandwich.', ingredients: 'Sourdough, Salmon, Egg, Cheese', image: 'https://placehold.co/400x300.png' },
+    { name: 'Bacon & Egg Cheese Open Sandwich', price: 65.00, calories: 580, description: 'A hearty open sandwich with bacon, egg, and cheese.', ingredients: 'Sourdough, Bacon, Egg, Cheese', image: 'https://placehold.co/400x300.png' },
+    { name: 'Bacon, Avo & Egg Open Sandwich', price: 70.00, calories: 600, description: 'A popular choice with bacon, avocado, and egg.', ingredients: 'Sourdough, Bacon, Avocado, Egg', image: 'https://placehold.co/400x300.png' },
+    { name: 'Tuna Mayonnaise Open Sandwich', price: 70.00, calories: 530, description: 'A classic tuna mayonnaise open sandwich.', ingredients: 'Sourdough, Tuna, Mayonnaise', image: 'https://placehold.co/400x300.png' },
+    { name: 'Egg Salad Open Sandwich', price: 55.00, calories: 500, description: 'A simple and delicious egg salad open sandwich.', ingredients: 'Sourdough, Egg, Mayonnaise', image: 'https://placehold.co/400x300.png' },
+    { name: 'Ham & Cheese Open Sandwich', price: 55.00, calories: 540, description: 'A classic ham and cheese open sandwich.', ingredients: 'Sourdough, Ham, Cheese', image: 'https://placehold.co/400x300.png' },
+    
+    // Macro Conscious
+    { name: 'Chicken Strips with Avocado, Red Onion & Feta', price: 85.00, calories: 550, description: 'Healthy and delicious chicken strips.', ingredients: 'Chicken, Avocado, Red Onion, Feta', image: 'https://placehold.co/400x300.png' },
+    { name: 'Chicken & Avo Wrap', price: 85.00, calories: 600, description: 'A wrap filled with chicken and avocado.', ingredients: 'Chicken, Avocado, Wrap', image: 'https://placehold.co/400x300.png' },
+    { name: 'Chicken Stir-Fry with Basmati Rice', price: 85.00, calories: 620, description: 'A healthy chicken stir-fry.', ingredients: 'Chicken, Vegetables, Basmati Rice', image: 'https://placehold.co/400x300.png' },
+    { name: 'Chicken, Carbs & Veg', price: 85.00, calories: 580, description: 'A balanced meal of chicken, carbs, and vegetables.', ingredients: 'Chicken, Potato, Mixed Veggies', image: 'https://placehold.co/400x300.png' },
+    { name: 'Chicken Coconut Curry', price: 85.00, calories: 650, description: 'A fragrant chicken coconut curry.', ingredients: 'Chicken, Coconut Milk, Spices', image: 'https://placehold.co/400x300.png' },
+    { name: 'Chicken Strips & Chips with Dip', price: 85.00, calories: 750, description: 'A classic favorite, chicken strips and chips.', ingredients: 'Chicken Strips, Chips, Dip', image: 'https://placehold.co/400x300.png' },
+    { name: 'Chickpea Coconut Curry', price: 85.00, calories: 550, description: 'A vegetarian-friendly chickpea curry.', ingredients: 'Chickpeas, Coconut Milk, Spices', image: 'https://placehold.co/400x300.png' },
+    { name: 'Beef, Feta & Avo Wrap', price: 95.00, calories: 680, description: 'A delicious beef wrap with feta and avocado.', ingredients: 'Beef, Feta, Avocado, Wrap', image: 'https://placehold.co/400x300.png' },
+    { name: 'Mince Wrap (Mexican)', price: 95.00, calories: 700, description: 'A spicy Mexican mince wrap.', ingredients: 'Mince, Spices, Wrap, Salsa', image: 'https://placehold.co/400x300.png' },
+    { name: 'Steak, Egg & Chips', price: 110.00, calories: 900, description: 'A hearty meal of steak, egg, and chips.', ingredients: 'Steak, Egg, Chips', image: 'https://placehold.co/400x300.png' },
+
     // Breakfast
-    { name: 'Quinoa Porridge', price: 85.00, calories: 350, description: 'Warm quinoa porridge with berries, nuts, and a drizzle of honey.', ingredients: 'Quinoa, Almond Milk, Berries, Almonds, Honey', image: 'https://placehold.co/400x300.png' },
-    { name: 'Avocado Toast with Egg', price: 95.00, calories: 400, description: 'Sourdough toast with smashed avocado, a poached egg, and chili flakes.', ingredients: 'Sourdough Bread, Avocado, Egg, Chili Flakes', image: 'https://placehold.co/400x300.png' },
-    { name: 'Greek Yogurt Parfait', price: 75.00, calories: 320, description: 'Layers of Greek yogurt, granola, and fresh fruit.', ingredients: 'Greek Yogurt, Granola, Mixed Berries', image: 'https://placehold.co/400x300.png' },
-    { name: 'Oatmeal with Berries and Nuts', price: 70.00, calories: 380, description: 'Classic rolled oats cooked with milk, topped with mixed berries and walnuts.', ingredients: 'Rolled Oats, Milk, Mixed Berries, Walnuts', image: 'https://placehold.co/400x300.png' },
-    { name: 'Scrambled Eggs with Spinach', price: 90.00, calories: 350, description: 'Fluffy scrambled eggs with fresh spinach, served with whole-wheat toast.', ingredients: 'Eggs, Spinach, Whole-wheat Toast, Olive Oil', image: 'https://placehold.co/400x300.png' },
-    { name: 'Smoothie Bowl', price: 100.00, calories: 420, description: 'A thick smoothie with banana and spinach, topped with chia seeds and fruit.', ingredients: 'Banana, Spinach, Protein Powder, Almond Milk, Chia Seeds, Fruit', image: 'https://placehold.co/400x300.png' },
-
-    // Lunch
-    { name: 'Grilled Chicken Salad', price: 120.00, calories: 450, description: 'Mixed greens with grilled chicken breast, cherry tomatoes, cucumber, and a light vinaigrette.', ingredients: 'Chicken Breast, Mixed Greens, Cherry Tomatoes, Cucumber, Vinaigrette', image: 'https://placehold.co/400x300.png' },
-    { name: 'Salmon with Asparagus', price: 160.00, calories: 550, description: 'Grilled salmon fillet served with steamed asparagus and a lemon wedge.', ingredients: 'Salmon Fillet, Asparagus, Lemon, Olive Oil', image: 'https://placehold.co/400x300.png' },
-    { name: 'Lentil Soup', price: 90.00, calories: 380, description: 'A hearty and nutritious soup made with lentils, carrots, celery, and spices.', ingredients: 'Lentils, Carrots, Celery, Vegetable Broth, Spices', image: 'https://placehold.co/400x300.png' },
-    { name: 'Quinoa Bowl with Roasted Vegetables', price: 110.00, calories: 480, description: 'A vibrant bowl of quinoa topped with roasted seasonal vegetables and a tahini dressing.', ingredients: 'Quinoa, Bell Peppers, Zucchini, Broccoli, Tahini Dressing', image: 'https://placehold.co/400x300.png' },
-    { name: 'Turkey and Avocado Wrap', price: 115.00, calories: 480, description: 'Sliced turkey breast with avocado, lettuce, and tomato in a whole-wheat tortilla.', ingredients: 'Turkey Breast, Avocado, Lettuce, Tomato, Whole-wheat Tortilla', image: 'https://placehold.co/400x300.png' },
-    { name: 'Black Bean Burger', price: 105.00, calories: 520, description: 'A homemade black bean patty on a whole-wheat bun with all the fixings.', ingredients: 'Black Beans, Breadcrumbs, Onion, Spices, Whole-wheat Bun', image: 'https://placehold.co/400x300.png' },
-    { name: 'Chicken and Vegetable Skewers', price: 130.00, calories: 500, description: 'Grilled chicken and colorful vegetable skewers served with brown rice.', ingredients: 'Chicken Breast, Bell Peppers, Zucchini, Onion, Brown Rice', image: 'https://placehold.co/400x300.png' },
-
-    // Dinner
-    { name: 'Lean Beef Steak with Sweet Potato', price: 180.00, calories: 600, description: 'A lean cut of beef steak, grilled to perfection, served with roasted sweet potato wedges.', ingredients: 'Beef Steak, Sweet Potato, Rosemary, Garlic', image: 'https://placehold.co/400x300.png' },
-    { name: 'Tofu Stir-fry', price: 115.00, calories: 420, description: 'Crispy tofu stir-fried with a variety of colorful vegetables in a light soy-ginger sauce.', ingredients: 'Tofu, Broccoli, Carrots, Snap Peas, Soy Sauce, Ginger', image: 'https://placehold.co/400x300.png' },
-    { name: 'Baked Cod with Greens', price: 150.00, calories: 490, description: 'Flaky baked cod served on a bed of sautéed spinach and kale.', ingredients: 'Cod Fillet, Spinach, Kale, Garlic, Lemon', image: 'https://placehold.co/400x300.png' },
-    { name: 'Shrimp Scampi with Zucchini Noodles', price: 165.00, calories: 450, description: 'Garlic shrimp sautéed with zucchini noodles for a light, low-carb pasta alternative.', ingredients: 'Shrimp, Zucchini, Garlic, Lemon, Parsley', image: 'https://placehold.co/400x300.png' },
-    { name: 'Stuffed Bell Peppers', price: 125.00, calories: 470, description: 'Bell peppers stuffed with a mix of ground turkey, quinoa, and vegetables, baked to perfection.', ingredients: 'Bell Peppers, Ground Turkey, Quinoa, Tomato Sauce', image: 'https://placehold.co/400x300.png' },
-    { name: 'Vegetable Curry', price: 110.00, calories: 430, description: 'A fragrant curry with chickpeas, sweet potatoes, and spinach in a coconut milk base.', ingredients: 'Chickpeas, Sweet Potato, Spinach, Coconut Milk, Curry Spices', image: 'https://placehold.co/400x300.png' },
-    { name: 'Sheet Pan Chicken Fajitas', price: 135.00, calories: 530, description: 'Sliced chicken and bell peppers tossed in fajita seasoning and roasted on a single sheet pan.', ingredients: 'Chicken Breast, Bell Peppers, Onion, Fajita Seasoning', image: 'https://placehold.co/400x300.png' },
+    { name: 'Poached Egg on Greens with Cottage Cheese', price: 60.00, calories: 350, description: 'A light and healthy breakfast.', ingredients: 'Poached Eggs, Kale, Red Onion, Cottage Cheese', image: 'https://placehold.co/400x300.png' },
+    { name: 'Overnight Oats with Berries', price: 40.00, calories: 380, description: 'A convenient and healthy breakfast option.', ingredients: 'Oats, Chia Seeds, Yogurt, Berries', image: 'https://placehold.co/400x300.png' },
+    { name: 'Breakfast Pizza (Egg Base)', price: 65.00, calories: 550, description: 'A pizza for breakfast with an egg base.', ingredients: 'Egg, Bacon, Mushrooms, Cheese', image: 'https://placehold.co/400x300.png' },
+    { name: 'Triple Delight Omelette', price: 65.00, calories: 600, description: 'A three-egg omelette with your choice of fillings.', ingredients: 'Eggs, Bacon, Cheese, Tomato, Onion', image: 'https://placehold.co/400x300.png' },
+    { name: 'Powerhouse Omelette', price: 70.00, calories: 650, description: 'A four-egg omelette packed with protein.', ingredients: 'Eggs, Bacon, Spinach, Herbs, Cheese', image: 'https://placehold.co/400x300.png' },
+    { name: 'Breakfast Beast', price: 110.00, calories: 1200, description: 'For the very hungry!', ingredients: 'Eggs, Bacon, Cheese Griller, Chips, Spinach, Sourdough', image: 'https://placehold.co/400x300.png' },
+    { name: 'English Breakfast', price: 55.00, calories: 700, description: 'A classic English breakfast.', ingredients: 'Eggs, Bacon, Grilled Tomato, Sourdough', image: 'https://placehold.co/400x300.png' },
+    { name: 'Heavy Breakfast', price: 90.00, calories: 1000, description: 'A larger breakfast for a big appetite.', ingredients: 'Eggs, Bacon, Grilled Tomato, Sourdough, Cheese Griller', image: 'https://placehold.co/400x300.png' },
+    { name: 'Hash Brown Breakfast', price: 85.00, calories: 850, description: 'A breakfast centered around hash browns.', ingredients: 'Bacon, Hash Browns, Cheese Balls', image: 'https://placehold.co/400x300.png' },
+    { name: 'Eggs Benedict', price: 89.00, calories: 750, description: 'Classic Eggs Benedict with ham or bacon.', ingredients: 'Muffin, Ham or Bacon, Poached Eggs, Hollandaise', image: 'https://placehold.co/400x300.png' },
+    { name: 'Eggs Benedict with Salmon', price: 125.00, calories: 720, description: 'Eggs Benedict with salmon.', ingredients: 'Muffin, Salmon, Poached Eggs, Hollandaise', image: 'https://placehold.co/400x300.png' },
+    { name: 'Potato Rosti', price: 75.00, calories: 800, description: 'A crispy potato rosti with all the fixings.', ingredients: 'Potato Rosti, Cheese, Egg, Viennas, Bacon, Sourdough', image: 'https://placehold.co/400x300.png' },
 ];
 
 export function MenuTable() {
@@ -123,7 +174,7 @@ export function MenuTable() {
     const batch = writeBatch(db);
     const menuCollection = collection(db, "menu");
     
-    healthyMealsSeedData.forEach(meal => {
+    dailyRoastGrillMenuSeedData.forEach(meal => {
         const docRef = doc(menuCollection); // Automatically generate a new ID
         batch.set(docRef, meal);
     });
@@ -131,14 +182,14 @@ export function MenuTable() {
     batch.commit().then(() => {
         toast({
             title: "Menu Created!",
-            description: `${healthyMealsSeedData.length} healthy meals have been added to the menu.`,
+            description: `${dailyRoastGrillMenuSeedData.length} healthy meals have been added to the menu.`,
         });
         fetchMeals(); // Refresh the list
     }).catch(async (serverError) => {
         const permissionError = new FirestorePermissionError({
             path: menuCollection.path,
             operation: 'create', // This is a batch write, approximating as 'create'
-            requestResourceData: healthyMealsSeedData,
+            requestResourceData: dailyRoastGrillMenuSeedData,
         });
         errorEmitter.emit('permission-error', permissionError);
     }).finally(() => {
@@ -252,3 +303,5 @@ export function MenuTable() {
     </>
   );
 }
+
+    
