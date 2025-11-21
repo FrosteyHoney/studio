@@ -39,16 +39,20 @@ export function LoginForm() {
       email: "",
       password: "",
     },
+    mode: "onChange", // Check validation as user types
   });
+
+  const emailValue = form.watch("email");
+  const isEmailValid = z.string().email().safeParse(emailValue).success;
 
   async function handlePasswordReset() {
     const email = form.getValues("email");
-    if (!email) {
+    if (!isEmailValid) {
       form.trigger("email");
       toast({
         variant: "destructive",
-        title: "Email required",
-        description: "Please enter your email address to reset your password.",
+        title: "Valid email required",
+        description: "Please enter a valid email address to reset your password.",
       });
       return;
     }
@@ -155,7 +159,7 @@ export function LoginForm() {
             <FormItem>
               <div className="flex justify-between items-center">
                 <FormLabel>Password</FormLabel>
-                <Button variant="link" className="p-0 h-auto text-xs text-muted-foreground" type="button" onClick={handlePasswordReset}>Forgot Password?</Button>
+                <Button variant="link" className="p-0 h-auto text-xs text-muted-foreground" type="button" onClick={handlePasswordReset} disabled={!isEmailValid || isLoading}>Forgot Password?</Button>
               </div>
               <div className="relative">
                 <FormControl>
@@ -197,5 +201,3 @@ export function LoginForm() {
     </Form>
   );
 }
-
-    
